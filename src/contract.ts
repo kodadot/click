@@ -1,7 +1,7 @@
 import { assertNotNull, Store } from "@subsquid/substrate-evm-processor";
 import { ethers } from "ethers";
 import * as erc721 from "./abi/erc721";
-import { Contract } from "./model";
+import { CollectionEntity } from "./model";
  
 export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
 
@@ -11,24 +11,24 @@ export const contract = new ethers.Contract(
   new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );
  
-export function createContractEntity(): Contract {
-  return new Contract({
+export function createContractEntity(): CollectionEntity {
+  return new CollectionEntity({
     id: contract.address,
     name: "Moonsama",
     symbol: "MSAMA",
-    totalSupply: 1000n,
+    max: 1000n,
   });
 }
  
-let contractEntity: Contract | undefined;
+let contractEntity: CollectionEntity | undefined;
  
 export async function getContractEntity({
   store,
 }: {
   store: Store;
-}): Promise<Contract> {
+}): Promise<CollectionEntity> {
   if (contractEntity == null) {
-    contractEntity = await store.get(Contract, contract.address);
+    contractEntity = await store.get(CollectionEntity, contract.address);
   }
   return assertNotNull(contractEntity);
 }
