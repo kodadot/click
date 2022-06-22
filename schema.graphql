@@ -1,103 +1,104 @@
-type Token @entity {
+type CollectionEntity @entity {
   id: ID!
-  owner: Owner
-  uri: String
-  transfers: [Transfer!]! @derivedFrom(field: "token")
-  contract: Contract
+  blockNumber: BigInt
+  createdAt: DateTime!
+  currentOwner: String!
+  issuer: String!
+  max: BigInt! # totalSupply
+  meta: MetadataEntity
+  burned: Boolean
+  metadata: String
+  name: String
+  nfts: [NFTEntity!] @derivedFrom(field: "collection")
+  symbol: String
+  updatedAt: DateTime!
 }
 
-type Owner @entity {
+type NFTEntity @entity {
   id: ID!
-  ownedTokens: [Token!]! @derivedFrom(field: "owner")
-  balance: BigInt
+  blockNumber: BigInt
+  burned: Boolean!
+  collection: CollectionEntity!
+  createdAt: DateTime!
+  currentOwner: String!
+  events: [Event!] @derivedFrom(field: "nft")
+  hash: String! @index
+  issuer: String!
+  meta: MetadataEntity
+  metadata: String
+  name: String
+  sn: String!
+  updatedAt: DateTime!
 }
 
-type Contract @entity {
+type MetadataEntity @entity {
   id: ID!
   name: String
-  symbol: String
-  totalSupply: BigInt
-  mintedTokens: [Token!]! @derivedFrom(field: "contract")
+  description: String
+  image: String
+  attributes: [Attribute!]
+  animationUrl: String
+  type: String
 }
 
-type Transfer @entity {
+type Attribute @jsonField {
+  display: String
+  trait: String
+  value: String!
+}
+
+interface EventType {
   id: ID!
-  token: Token!
-  from: Owner
-  to: Owner
-  timestamp: BigInt!
-  block: Int!
-  transactionHash: String!
+  blockNumber: BigInt
+  timestamp: DateTime!
+  caller: String!
+  currentOwner: String
+  interaction: Interaction!
+  meta: String!
 }
 
-# Should be contract ;D
-# type CollectionEntity @entity {
+type Event implements EventType @entity {
+  id: ID!
+  blockNumber: BigInt
+  timestamp: DateTime!
+  caller: String!
+  currentOwner: String! # currentOwner
+  interaction: Interaction!
+  meta: String!
+  nft: NFTEntity!
+}
+
+enum Interaction {
+  MINT
+  MINTNFT
+  BUY
+  SEND
+  CONSUME
+}
+
+
+# type Transfer @entity {
 #   id: ID!
-#   blockNumber: BigInt
-#   createdAt: DateTime!
-#   currentOwner: String!
-#   issuer: String!
-#   max: BigInt!
-#   meta: MetadataEntity
-#   metadata: String
+#   token: Token!
+#   from: Owner
+#   to: Owner
+#   timestamp: BigInt!
+#   block: Int!
+#   transactionHash: String!
+# }
+
+# type Contract @entity {
+#   id: ID!
 #   name: String
-#   nfts: [NFTEntity!] @derivedFrom(field: "collection")
 #   symbol: String
-#   updatedAt: DateTime!
+#   totalSupply: BigInt
+#   mintedTokens: [Token!]! @derivedFrom(field: "contract")
 # }
 
-# type NFTEntity @entity {
+# type Token @entity {
 #   id: ID!
-#   blockNumber: BigInt
-#   burned: Boolean!
-#   collection: CollectionEntity!
-#   createdAt: DateTime!
-#   currentOwner: String!
-#   events: [Event!] @derivedFrom(field: "nft")
-#   hash: String! @index
-#   issuer: String!
-#   meta: MetadataEntity
-#   metadata: String
-#   name: String
-#   price: BigInt
-#   sn: String!
-#   updatedAt: DateTime!
-#   # type: ClassType!
-# }
-
-# type MetadataEntity @entity {
-#   id: ID!
-#   name: String
-#   description: String
-#   image: String
-#   attributes: [Attribute!]
-#   animationUrl: String
-#   type: String
-# }
-
-# type Attribute @jsonField {
-#   display: String
-#   trait: String
-#   value: String!
-# }
-
-# interface EventType {
-#   id: ID!
-#   blockNumber: BigInt
-#   timestamp: DateTime!
-#   caller: String!
-#   currentOwner: String
-#   interaction: Interaction!
-#   meta: String!
-# }
-
-# type Event implements EventType @entity {
-#   id: ID!
-#   blockNumber: BigInt
-#   timestamp: DateTime!
-#   caller: String!
-#   currentOwner: String! # currentOwner
-#   interaction: Interaction!
-#   meta: String!
-#   nft: NFTEntity!
+#   owner: Owner
+#   uri: String
+#   transfers: [Transfer!]! @derivedFrom(field: "token")
+#   contract: Contract
 # }

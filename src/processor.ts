@@ -3,9 +3,9 @@ import {
   SubstrateEvmProcessor,
 } from "@subsquid/substrate-evm-processor";
 import { lookupArchive } from "@subsquid/archive-registry";
-import { CHAIN_NODE, contract, createContractEntity, getContractEntity } from "./contract";
+import { CHAIN_NODE, contract, createContractEntity } from "./contract";
 import * as erc721 from "./abi/erc721";
-import { Owner, Token, Transfer } from "./model";
+import logger from './mappings/utils/logger'
 
 const processor = new SubstrateEvmProcessor("moonriver-substrate");
 
@@ -18,9 +18,9 @@ processor.setDataSource({
 
 processor.setTypesBundle("moonbeam");
 
-processor.addPreHook({ range: { from: 0, to: 0 } }, async (ctx) => {
-  await ctx.store.save(createContractEntity());
-});
+// processor.addPreHook({ range: { from: 0, to: 0 } }, async (ctx) => {
+//   await ctx.store.save(createContractEntity());
+// });
 
 processor.addEvmLogHandler(
   contract.address,
@@ -36,43 +36,13 @@ export async function contractLogsHandler(
   const transfer =
     erc721.events["Transfer(address,address,uint256)"].decode(ctx);
 
-  let from = await ctx.store.get(Owner, transfer.from);
-  if (from == null) {
-    from = new Owner({ id: transfer.from, balance: 0n });
-    await ctx.store.save(from);
-  }
-
-  let to = await ctx.store.get(Owner, transfer.to);
-  if (to == null) {
-    to = new Owner({ id: transfer.to, balance: 0n });
-    await ctx.store.save(to);
-  }
-
-  let token = await ctx.store.get(Token, transfer.tokenId.toString());
-  if (token == null) {
-    token = new Token({
-      id: transfer.tokenId.toString(),
-      uri: await contract.tokenURI(transfer.tokenId),
-      contract: await getContractEntity(ctx),
-      owner: to,
-    });
-    await ctx.store.save(token);
-  } else {
-    token.owner = to;
-    await ctx.store.save(token);
-  }
-
-  await ctx.store.save(
-    new Transfer({
-      id: ctx.txHash,
-      token,
-      from,
-      to,
-      timestamp: BigInt(ctx.substrate.block.timestamp),
-      block: ctx.substrate.block.height,
-      transactionHash: ctx.txHash,
-    })
-  );
+    logger.debug(`Transfer: ${JSON.stringify(transfer)}`)
+    logger.debug(`contractAddress: ${ctx.contractAddress}`)
+    const caller = ctx.substrate.extrinsic?.signer.toString() || ''; 
+    const blockNumber = ctx.substrate.block.height.toString();
+    const timestamp = new Date(ctx.substrate.block.timestamp);
+    logger.debug(`BASE: ${JSON.stringify({ caller, blockNumber, timestamp })}`)
+  
 }
 
 processor.run();
