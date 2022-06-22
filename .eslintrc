@@ -1,10 +1,9 @@
 {
   "extends": [
-    "airbnb-typescript/base",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:eslint-comments/recommended",
-    "plugin:prettier/recommended"
+    // "airbnb-typescript/base",
+    // "plugin:@typescript-eslint/recommended",
+    // "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    // "plugin:eslint-comments/recommended"
   ],
   "parserOptions": {
     "project": "./tsconfig.json",
@@ -32,7 +31,9 @@
     "no-underscore-dangle": "off",
     "@typescript-eslint/unbound-method": "warn",
     // makes a mess
-    "@typescript-eslint/no-use-before-define": "off"
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "@typescript-eslint/no-semi": "off"
   },
   "ignorePatterns": [
     "src/model/generated",
