@@ -179,6 +179,10 @@ async function createEvent(
   }
 }
 
+async function mainFrame(ctx: EvmLogHandlerContext): Promise<void> {
+  
+}
+
 
 // export async function contractLogsHandler(
 //   ctx: EvmLogHandlerContext
