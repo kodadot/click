@@ -6,6 +6,7 @@ type CollectionEntity @entity {
   issuer: String!
   max: BigInt! # totalSupply
   meta: MetadataEntity
+  burned: Boolean
   metadata: String
   name: String
   nfts: [NFTEntity!] @derivedFrom(field: "collection")

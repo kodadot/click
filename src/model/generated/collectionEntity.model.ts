@@ -31,6 +31,9 @@ export class CollectionEntity {
   @ManyToOne_(() => MetadataEntity, {nullable: true})
   meta!: MetadataEntity | undefined | null
 
+  @Column_("bool", {nullable: true})
+  burned!: boolean | undefined | null
+
   @Column_("text", {nullable: true})
   metadata!: string | undefined | null
 
