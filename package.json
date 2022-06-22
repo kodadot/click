@@ -25,6 +25,7 @@
     "dotenv": "^16.0.1",
     "ethers": "^5.6.8",
     "md5": "^2.3.0",
+    "nanoid": "^4.0.0",
     "pg": "^8.7.3",
     "signale": "^1.4.0",
     "typeorm": "^0.2.41"
@@ -32,7 +33,9 @@
   "devDependencies": {
     "@subsquid/substrate-metadata-explorer": "^0.0.8",
     "@subsquid/substrate-typegen": "^0.5.0",
+    "@types/md5": "^2.3.2",
     "@types/node": "^18.0.0",
+    "@types/signale": "^1.4.4",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-typescript": "^12.3.1",
