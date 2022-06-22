@@ -108,3 +108,12 @@ More details will be added later.
 ## Disclaimer
 
 This is alpha-quality software. Expect some bugs and incompatible changes in coming weeks.
+
+
+## Viki's Randomnotes
+
+1. [Squid EVM typegen](https://docs.subsquid.io/reference/squid-evm-typegen)
+
+```sh
+npx squid-evm-typegen --abi ./src/abi/ERC1155.json --output ./src/abi/erc1155.ts
+```
