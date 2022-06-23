@@ -1,3 +1,5 @@
+import { decode721Transfer } from './evm'
+import { contractOf } from './extract'
 import { BurnTokenEvent, Context, CreateCollectionEvent, CreateTokenEvent, TransferTokenEvent } from './types'
 
 export function getCreateCollectionEvent(ctx: Context): CreateCollectionEvent {
@@ -5,18 +7,21 @@ export function getCreateCollectionEvent(ctx: Context): CreateCollectionEvent {
 }
 
 export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
-  // const event = new NftInstanceMintedEvent(ctx);
+  const { to, tokenId } = decode721Transfer(ctx)
+  const collectionId = contractOf(ctx);
 
-  // const { classId, owner, instanceId, metadata } = event.asLatest;
-  // return { collectionId: classId.toString(), caller: addressOf(owner), sn: instanceId.toString(), metadata: metadata.toString() };
-  return {} as CreateTokenEvent;
+  return { collectionId, caller: to, sn: tokenId.toString() };
 }
 
 export function getTransferTokenEvent(ctx: Context): TransferTokenEvent {
-  return {} as TransferTokenEvent;
+  const { from, to, tokenId } = decode721Transfer(ctx)
+  const collectionId = contractOf(ctx);
+  return { collectionId, caller: from, sn: tokenId.toString(), to };
 }
 
 export function getBurnTokenEvent(ctx: Context): BurnTokenEvent {
-  return {} as BurnTokenEvent;
+  const { from, tokenId } = decode721Transfer(ctx)
+  const collectionId = contractOf(ctx);
+  return { collectionId, caller: from, sn: tokenId.toString() };
 }
 
