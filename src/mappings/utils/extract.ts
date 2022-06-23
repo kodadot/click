@@ -19,6 +19,10 @@ function toBaseEvent(event: Context): BaseCall {
   return { caller, blockNumber, timestamp };
 }
 
+export function contractOf(event: Context): string {
+  return event.contractAddress
+}
+
 
 export function unwrap<T>(ctx: Context, unwrapFn: UnwrapFunc<T>): CallWith<T> {
   const baseCall = toBaseEvent(ctx);

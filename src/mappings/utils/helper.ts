@@ -7,7 +7,7 @@ export function isEmpty(obj: Record<string, any>) {
 }
 
 export function addressOf(address: Uint8Array): string {
- return ss58.codec("basilisk").encode(address);
+ return ss58.codec('moonriver').encode(address);
 }
 
 export function metadataOf({ metadata }: SomethingWithOptionalMeta): string {
