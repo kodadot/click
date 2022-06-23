@@ -12,9 +12,9 @@ import { BaseCall, CallWith, Context, UnwrapFunc } from './types'
 
 
 function toBaseEvent(event: Context): BaseCall {
-  const caller = event.extrinsic?.signer.toString() || ''; 
-  const blockNumber = event.block.height.toString();
-  const timestamp = new Date(event.block.timestamp);
+  const caller = event.substrate.extrinsic?.signer.toString() || ''; 
+  const blockNumber = event.substrate.block.height.toString();
+  const timestamp = new Date(event.substrate.block.timestamp);
 
   return { caller, blockNumber, timestamp };
 }

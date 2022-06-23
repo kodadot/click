@@ -3,6 +3,7 @@ import { Attribute } from '../../model/generated/_attribute'
 import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { nanoid } from 'nanoid'
 import { createTokenId } from './extract'
+import { EvmLogHandlerContext } from '@subsquid/substrate-evm-processor'
 
 export type BaseCall = {
   caller: string;
@@ -35,8 +36,8 @@ export function attributeFrom(attribute: MetadataAttribute): Attribute {
   })
 }
 
-// export type Context = EvmLogHandlerContext
-export type Context = EventHandlerContext
+export type Context = EvmLogHandlerContext
+// export type Context = EventHandlerContext
 
 export type Optional<T> = T | null
 
