@@ -3,7 +3,7 @@ import { ensure } from './types'
 import logger from './logger'
 import { SanitizerFunc, SomethingWithMeta } from './types'
 
-export const BASE_URL = 'https://kodadot.mypinata.cloud/'
+export const BASE_URL = 'https://moonsama.mypinata.cloud/'
 
 const api = Axios.create({
   baseURL: BASE_URL,
