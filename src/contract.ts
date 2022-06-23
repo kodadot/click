@@ -1,7 +1,7 @@
 import { assertNotNull, Store } from "@subsquid/substrate-evm-processor";
 import { ethers } from "ethers";
 import * as erc721 from "./abi/erc721";
-import { CollectionEntity } from "./model";
+import { CollectionEntity, CollectionType } from "./model";
  
 export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
 
@@ -16,7 +16,12 @@ export function createContractEntity(): CollectionEntity {
     id: contract.address,
     name: "Moonsama",
     symbol: "MSAMA",
-    max: 1000n,
+    max: 1000,
+    currentOwner: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
+    issuer: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
+    updatedAt: new Date(),
+    createdAt: new Date(),
+    type: CollectionType.ERC721,
   });
 }
  

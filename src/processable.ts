@@ -1,5 +1,9 @@
 import { CollectionEntity, CollectionType } from './model'
 
+export enum Event {
+  executed = 'ethereum.Executed'
+}
+
 export enum Contracts {
   Moonsama = '0xb654611f84a8dc429ba3cb4fda9fad236c505a1a', // ERC-721
   Pondsama = '0xe4edcaaea73684b310fc206405ee80abcec73ee0', // ERC-721
