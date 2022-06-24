@@ -24,6 +24,8 @@ import {
   Interaction, Optional,
   TokenMetadata
 } from './utils/types'
+import * as erc721 from '../abi/erc721'
+import { decode721Transfer, whatIsThisTransfer } from './utils/evm'
 
 async function handleMetadata(
   id: string,
@@ -185,7 +187,20 @@ export async function forceCreateContract(ctx: BlockHandlerContext) {
 }
 
 async function mainFrame(ctx: EvmLogHandlerContext): Promise<void> {
-
+    const transfer = decode721Transfer(ctx)
+    switch (whatIsThisTransfer(transfer)) {
+      case Interaction.MINTNFT:
+        await handleTokenCreate(ctx)
+        break
+      case Interaction.SEND:
+        await handleTokenTransfer(ctx)
+        break
+      case Interaction.CONSUME:
+        await handleTokenBurn(ctx)
+        break
+      default:
+        logger.warn(`Unknown transfer: ${JSON.stringify(transfer, null, 2)}`)
+    }
 }
 
 
