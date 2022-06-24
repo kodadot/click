@@ -26,6 +26,7 @@ import {
 } from './utils/types'
 import * as erc721 from '../abi/erc721'
 import { decode721Transfer, whatIsThisTransfer } from './utils/evm'
+import { EMPTY_ADDRESS } from './utils/constants'
 
 async function handleMetadata(
   id: string,
@@ -148,6 +149,8 @@ export async function handleTokenBurn(context: Context): Promise<void> {
   plsBe(real, entity)
 
   entity.burned = true
+  entity.currentOwner = EMPTY_ADDRESS
+
   logger.success(`[BURN] ${id} by ${event.caller}`)
   await context.store.save(entity)
   const meta = entity.metadata ?? ''
