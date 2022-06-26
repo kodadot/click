@@ -18,7 +18,7 @@ export const isTransfer = (addrOne: string, addrTwo: string) => {
 export const whatIsThisTransfer = (transfer: erc721.TransferAddressAddressUint256Event): Interaction => {
   const { from, to } = transfer
   if (isMint(from, to)) {
-    return Interaction.MINT
+    return Interaction.MINTNFT
   }
   if (isBurn(from, to)) {
     return Interaction.CONSUME
