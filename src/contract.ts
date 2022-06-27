@@ -1,6 +1,7 @@
 import { assertNotNull, Store } from "@subsquid/substrate-evm-processor";
-import { ethers } from "ethers";
+import { ethers, Contract, ContractInterface } from "ethers";
 import * as erc721 from "./abi/erc721";
+import * as erc1155 from "./abi/erc1155";
 import { CollectionEntity, CollectionType } from "./model";
  
 export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
@@ -10,7 +11,27 @@ export const contract = new ethers.Contract(
   erc721.abi,
   new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );
- 
+
+export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
+  return contractify(contract).tokenURI(tokenId).catch(() => "");
+}
+
+export const baseUriOf = (contract: string): Promise<string> => {
+  return contractify(contract).baseURI().catch(() => "");
+}
+
+function contractify(address: string, type = CollectionType.ERC721): Contract {
+  return new ethers.Contract(
+    address,
+    eitherOr(type, erc721.abi, erc1155.abi),
+    new ethers.providers.WebSocketProvider(CHAIN_NODE)
+  );
+}
+
+export function eitherOr<T>(type = CollectionType.ERC721, one: T, two: T): T {
+  return type === CollectionType.ERC721 ? one : two;
+}
+
 export function createContractEntity(): CollectionEntity {
   return new CollectionEntity({
     id: contract.address,
