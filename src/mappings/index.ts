@@ -27,6 +27,7 @@ import {
 import * as erc721 from '../abi/erc721'
 import { decode721Transfer, whatIsThisTransfer } from './utils/evm'
 import { EMPTY_ADDRESS } from './utils/constants'
+import { serializer } from './utils/serializer'
 
 async function handleMetadata(
   id: string,
@@ -59,7 +60,7 @@ async function handleMetadata(
 export async function handleCollectionCreate(context: Context): Promise<void> {
   logger.pending(`[COLECTTION++]: ${context.substrate.block.height}`)
   const event = unwrap(context, getCreateCollectionEvent)
-  logger.debug(`collection: ${JSON.stringify(event, null, 2)}`)
+  logger.debug(`collection: ${JSON.stringify(event, serializer, 2)}`)
   const final = await getOrCreate<CE>(context.store, CE, event.id, {})
   plsBe(remintable, final)
 
@@ -67,7 +68,7 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
   final.issuer = event.caller
   final.currentOwner = event.caller
   final.blockNumber = BigInt(event.blockNumber)
-  final.metadata = event.metadata || 'ipfs://ipfs/bafkreiazeqysfmeuzqcnjp6rijxfu5h7sj3t4h2rxehi7rlyegzfy7lxeq'
+  // final.metadata = event.metadata || 'ipfs://ipfs/bafkreiazeqysfmeuzqcnjp6rijxfu5h7sj3t4h2rxehi7rlyegzfy7lxeq'
   final.burned = false
   final.createdAt = event.timestamp
   final.updatedAt = event.timestamp
@@ -89,7 +90,7 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
 export async function handleTokenCreate(context: Context): Promise<void> {
   logger.pending(`[NFT++]: ${context.substrate.block.height}`)
   const event = unwrap(context, getCreateTokenEvent)
-  logger.debug(`nft: ${JSON.stringify(event, null, 2)}`)
+  logger.debug(`nft: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
   const collection = ensure<CE>(
     await get<CE>(context.store, CE, event.collectionId)
@@ -105,12 +106,12 @@ export async function handleTokenCreate(context: Context): Promise<void> {
   final.blockNumber = BigInt(event.blockNumber)
   final.collection = collection
   final.sn = event.sn
-  final.metadata = event.metadata || 'ipfs://ipfs/bafkreiazeqysfmeuzqcnjp6rijxfu5h7sj3t4h2rxehi7rlyegzfy7lxeq'
+  final.metadata = await event.metadata
   final.burned = false
   final.createdAt = event.timestamp
   final.updatedAt = event.timestamp
 
-  logger.debug(`metadata: ${event.metadata}`)
+  logger.debug(`metadata: ${final.metadata}`)
 
   if (final.metadata) {
     const metadata = await handleMetadata(final.metadata, context.store)
@@ -126,7 +127,7 @@ export async function handleTokenCreate(context: Context): Promise<void> {
 export async function handleTokenTransfer(context: Context): Promise<void> {
   logger.pending(`[SEND]: ${context.substrate.block.height}`)
   const event = unwrap(context, getTransferTokenEvent)
-  logger.debug(`send: ${JSON.stringify(event, null, 2)}`)
+  logger.debug(`send: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
   const entity = ensure<NE>(await get(context.store, NE, id))
   plsBe(real, entity)
@@ -143,7 +144,7 @@ export async function handleTokenTransfer(context: Context): Promise<void> {
 export async function handleTokenBurn(context: Context): Promise<void> {
   logger.pending(`[BURN]: ${context.substrate.block.height}`)
   const event = unwrap(context, getBurnTokenEvent)
-  logger.debug(`burn: ${JSON.stringify(event, null, 2)}`)
+  logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
   const entity = ensure<NE>(await get(context.store, NE, id))
   plsBe(real, entity)
