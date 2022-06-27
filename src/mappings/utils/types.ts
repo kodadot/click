@@ -70,7 +70,7 @@ export type CreateCollectionEvent = BaseCollectionEvent & OptionalMeta & {
 
 export type CreateTokenEvent = BaseTokenEvent & {
   caller: string;
-  metadata?: string;
+  metadata: Promise<string>;
 }
 
 export type TransferTokenEvent = BaseTokenEvent & {
@@ -87,7 +87,9 @@ export type BuyTokenEvent = ListTokenEvent & {
   currentOwner: string;
 }
 
-export type BurnTokenEvent = CreateTokenEvent
+export type BurnTokenEvent = BaseTokenEvent & {
+  caller: string
+}
 
 export type DestroyCollectionEvent = BaseCollectionEvent
 
