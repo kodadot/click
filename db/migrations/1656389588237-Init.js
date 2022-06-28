@@ -1,5 +1,5 @@
-module.exports = class Init1655911049279 {
-  name = 'Init1655911049279'
+module.exports = class Init1656389588237 {
+  name = 'Init1656389588237'
 
   async up(db) {
     await db.query(`CREATE TABLE "metadata_entity" ("id" character varying NOT NULL, "name" text, "description" text, "image" text, "attributes" jsonb, "animation_url" text, "type" text, CONSTRAINT "PK_2cb9d5d4ae99d9a27497bf8d2e8" PRIMARY KEY ("id"))`)
@@ -9,7 +9,7 @@ module.exports = class Init1655911049279 {
     await db.query(`CREATE INDEX "IDX_4b98bf4d630de0037475b9bbb7" ON "nft_entity" ("collection_id") `)
     await db.query(`CREATE INDEX "IDX_16e57ac8478b6ea1f383e3eb03" ON "nft_entity" ("hash") `)
     await db.query(`CREATE INDEX "IDX_2bfc45b91959a14ab8b2d734cd" ON "nft_entity" ("meta_id") `)
-    await db.query(`CREATE TABLE "collection_entity" ("id" character varying NOT NULL, "block_number" numeric, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "current_owner" text NOT NULL, "issuer" text NOT NULL, "max" numeric NOT NULL, "burned" boolean, "metadata" text, "name" text, "symbol" text, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "meta_id" character varying, CONSTRAINT "PK_5d44e140c4fcb3d961f9e83405f" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "collection_entity" ("id" character varying NOT NULL, "block_number" numeric, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "current_owner" text NOT NULL, "issuer" text NOT NULL, "max" integer NOT NULL, "burned" boolean, "metadata" text, "name" text, "symbol" text, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "type" character varying(7) NOT NULL, "meta_id" character varying, CONSTRAINT "PK_5d44e140c4fcb3d961f9e83405f" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_014542183f297493eab0cd8bdf" ON "collection_entity" ("meta_id") `)
     await db.query(`ALTER TABLE "event" ADD CONSTRAINT "FK_9380d479563e5a664759359470a" FOREIGN KEY ("nft_id") REFERENCES "nft_entity"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "nft_entity" ADD CONSTRAINT "FK_4b98bf4d630de0037475b9bbb7a" FOREIGN KEY ("collection_id") REFERENCES "collection_entity"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
