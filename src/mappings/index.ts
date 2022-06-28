@@ -14,7 +14,7 @@ import {
   getCreateTokenEvent, getTransferTokenEvent
 } from './utils/getters'
 import { isEmpty } from './utils/helper'
-import logger, { logError } from './utils/logger'
+import logger, { logError, metaLog } from './utils/logger'
 import { fetchMetadata } from './utils/metadata'
 import {
   attributeFrom,
@@ -24,7 +24,6 @@ import {
   Interaction, Optional,
   TokenMetadata
 } from './utils/types'
-import * as erc721 from '../abi/erc721'
 import { decode721Transfer, whatIsThisTransfer } from './utils/evm'
 import { EMPTY_ADDRESS } from './utils/constants'
 import { serializer } from './utils/serializer'
@@ -106,6 +105,7 @@ export async function handleTokenCreate(context: Context): Promise<void> {
   final.blockNumber = BigInt(event.blockNumber)
   final.collection = collection
   final.sn = event.sn
+  final.price = BigInt(0);
   final.metadata = await event.metadata
   final.burned = false
   final.createdAt = event.timestamp
@@ -190,16 +190,19 @@ export async function forceCreateContract(ctx: BlockHandlerContext) {
   
 }
 
-async function mainFrame(ctx: EvmLogHandlerContext): Promise<void> {
+export async function mainFrame(ctx: EvmLogHandlerContext): Promise<void> {
     const transfer = decode721Transfer(ctx)
     switch (whatIsThisTransfer(transfer)) {
       case Interaction.MINTNFT:
+        metaLog(Interaction.MINTNFT, transfer)
         await handleTokenCreate(ctx)
         break
       case Interaction.SEND:
+        metaLog(Interaction.SEND, transfer)
         await handleTokenTransfer(ctx)
         break
       case Interaction.CONSUME:
+        metaLog(Interaction.CONSUME, transfer)
         await handleTokenBurn(ctx)
         break
       default:
