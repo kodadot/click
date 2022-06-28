@@ -62,7 +62,7 @@ kill TAG:
 	npx sqd squid:kill click@{{TAG}}
 
 exec:
-	docker exec -it snek-db-1 psql -U postgres -d squid
+	docker exec -it click-db-1 psql -U postgres -d squid
 
 brutal TAG:
 	npx sqd squid:update click@{{TAG}} --hardReset
