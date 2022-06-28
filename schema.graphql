@@ -79,6 +79,8 @@ enum CollectionType {
 enum Interaction {
   MINT
   MINTNFT
+  LIST
+  UNLIST
   BUY
   SEND
   CONSUME
