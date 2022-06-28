@@ -34,7 +34,7 @@ function toMap(name: string, symbol: string, max: number, meta: string, type: Co
     symbol,
     max,
     type,
-    metadata: meta ? `ipfs://ipfs/${meta}` : undefined,
+    // metadata: meta ? `ipfs://ipfs/${meta}` : undefined,
     currentOwner: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
     issuer: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
     updatedAt: new Date(),
