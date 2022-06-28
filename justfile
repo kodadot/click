@@ -43,6 +43,8 @@ reset:
 	npx sqd db create
 	npx sqd db:migrate
 
+new-schema: codegen build update-db
+
 migrate:
 	npx sqd db:migrate
 
