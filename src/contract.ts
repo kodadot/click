@@ -16,6 +16,10 @@ export const tokenUriOf = (contract: string, tokenId: string): Promise<string> =
   return contractify(contract).tokenURI(tokenId).catch(() => "");
 }
 
+export const uriOf = (contract: string, tokenId: string): Promise<string> => {
+  return contractify(contract, CollectionType.ERC1155).uri(tokenId).catch(() => "");
+}
+
 export const baseUriOf = (contract: string): Promise<string> => {
   return contractify(contract).baseURI().catch(() => "");
 }
