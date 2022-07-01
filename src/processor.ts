@@ -18,9 +18,11 @@ processor.setDataSource({
 
 processor.setTypesBundle("moonbeam");
 
-processor.addPreHook({ range: { from: 0, to: 0 } }, async (ctx) => {
-  await ctx.store.save(await createContractEntity());
-});
+// processor.addPreHook({ range: { from: 0, to: 0 } }, async (ctx) => {
+//   await ctx.store.save(createContractEntity());
+// });
+
+processor.addPreHook({ range: { from: 0, to: 0 } }, mappings.forceCreateContract);
 
 processor.addEvmLogHandler(
   Contracts.Moonsama,

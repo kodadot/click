@@ -27,6 +27,7 @@ import {
 import { decode721Transfer, whatIsThisTransfer } from './utils/evm'
 import { EMPTY_ADDRESS } from './utils/constants'
 import { serializer } from './utils/serializer'
+import { ContractsMap } from '../processable'
 
 async function handleMetadata(
   id: string,
@@ -187,7 +188,17 @@ async function createEvent(
 
 
 export async function forceCreateContract(ctx: BlockHandlerContext) {
+  const contracts = Object.entries(ContractsMap).map(([id, contract]) => {
+    metaLog('Building CONTRACT', { id, name: contract.name })
+    return new CE({
+      id,
+      ...contract
+    })
+  })
+
+  metaLog('CONTRACT DONE', { count: contracts.length })
   
+  await ctx.store.save(contracts);
 }
 
 export async function mainFrame(ctx: EvmLogHandlerContext): Promise<void> {
