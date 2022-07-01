@@ -1,5 +1,6 @@
 import { EMPTY_ADDRESS } from './constants'
 import * as erc721 from '../../abi/erc721'
+import * as erc1155 from '../../abi/erc1155'
 import { Context, Interaction } from './types'
 
 
@@ -29,4 +30,16 @@ export const whatIsThisTransfer = (transfer: erc721.TransferAddressAddressUint25
 
 export function decode721Transfer(event: Context): erc721.TransferAddressAddressUint256Event {
   return erc721.events["Transfer(address,address,uint256)"].decode(event)
+}
+
+export function decode1155SingleTransfer(event: Context): erc1155.TransferSingle0Event {
+  return erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].decode(event)
+}
+
+export function decode1155MutliTransfer(event: Context): erc1155.TransferBatch0Event {
+  return erc1155.events["TransferBatch(address,address,address,uint256[],uint256[])"].decode(event)
+}
+
+export function decode1155Urichange(event: Context): erc1155.URI0Event {
+  return erc1155.events["URI(string,uint256)"].decode(event)
 }
