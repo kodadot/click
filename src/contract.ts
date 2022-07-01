@@ -3,6 +3,7 @@ import { ethers, Contract, ContractInterface } from "ethers";
 import * as erc721 from "./abi/erc721";
 import * as erc1155 from "./abi/erc1155";
 import { CollectionEntity, CollectionType } from "./model";
+import { Contracts, ContractsMap } from "./processable";
  
 export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
 
@@ -14,6 +15,11 @@ export const contract = new ethers.Contract(
 
 export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
   return contractify(contract).tokenURI(tokenId).catch(() => "");
+}
+
+export const metadataFromUri = (contract: Contracts | string, tokenId: string): Promise<string> => {
+  const { type } = ContractsMap[contract as Contracts];
+  return type === CollectionType.ERC721 ? tokenUriOf(contract, tokenId) : uriOf(contract, tokenId);
 }
 
 export const uriOf = (contract: string, tokenId: string): Promise<string> => {
