@@ -3,6 +3,8 @@ import * as erc721 from '../../abi/erc721'
 import * as erc1155 from '../../abi/erc1155'
 import { Context, Interaction } from './types'
 
+export type RealTransferEvent = erc721.TransferAddressAddressUint256Event | erc1155.TransferSingle0Event | erc1155.TransferBatch0Event
+
 
 export const isMint = (addrOne: string, addrTwo: string) => {
   return addrOne === EMPTY_ADDRESS && addrTwo !== EMPTY_ADDRESS
@@ -16,7 +18,7 @@ export const isTransfer = (addrOne: string, addrTwo: string) => {
   return !(isMint(addrOne, addrTwo) || isBurn(addrOne, addrTwo))
 }
 
-export const whatIsThisTransfer = (transfer: erc721.TransferAddressAddressUint256Event): Interaction => {
+export const whatIsThisTransfer = (transfer: RealTransferEvent): Interaction => {
   const { from, to } = transfer
   if (isMint(from, to)) {
     return Interaction.MINTNFT
