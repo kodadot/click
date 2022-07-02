@@ -111,6 +111,7 @@ export async function handleTokenCreate(context: Context): Promise<void> {
   final.burned = false
   final.createdAt = event.timestamp
   final.updatedAt = event.timestamp
+  final.count = 1
 
   logger.debug(`metadata: ${final.metadata}`)
 
