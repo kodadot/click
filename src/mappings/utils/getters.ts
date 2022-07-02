@@ -1,5 +1,5 @@
 import { tokenUriOf } from '../../contract'
-import { decode1155UriChange, decode721Transfer } from './evm'
+import { decode1155MutliTransfer, decode1155SingleTransfer, decode1155UriChange, decode721Transfer } from './evm'
 import { contractOf } from './extract'
 import {
   BurnTokenEvent,
@@ -7,6 +7,7 @@ import {
   Context,
   CreateCollectionEvent,
   CreateTokenEvent,
+  TransferSingleTokenEvent,
   TransferTokenEvent
 } from './types'
 
@@ -40,3 +41,15 @@ export function getTokenUriChangeEvent(ctx: Context): ChangeMetadataEvent {
   const collectionId = contractOf(ctx)
   return { collectionId, sn: id.toString(), metadata: value }
 }
+
+export function getSingleTransferTokenEvent(ctx: Context): TransferSingleTokenEvent {
+  const { from, to, id, value } = decode1155SingleTransfer(ctx)
+  const collectionId = contractOf(ctx)
+  return { collectionId, caller: from, sn: id.toString(), to, count: value.toNumber() }
+}
+
+// export function getMultiTransferTokenEvent(ctx: Context): TransferSingleTokenEvent[] {
+//   const { from, to, ids, values } = decode1155MutliTransfer(ctx)
+//   const collectionId = contractOf(ctx)
+//   return { collectionId, caller: from, sn: id.toString(), to, count: value.toNumber() }
+// }

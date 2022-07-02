@@ -74,8 +74,17 @@ export type CreateTokenEvent = BaseTokenEvent & {
   metadata: Promise<string>;
 }
 
-export type TransferTokenEvent = BaseTokenEvent & {
-  caller: string;
+export type TransferTokenEvent = BaseTokenEvent & WithCaller & {
+  to: string;
+}
+
+export type TransferSingleTokenEvent = TransferTokenEvent & {
+  count: number;
+}
+
+export type TransferMultiTokenEvent = WithCaller & {
+  sns: string[];
+  counts: number[];
   to: string;
 }
 
