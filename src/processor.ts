@@ -3,7 +3,8 @@ import {
   SubstrateEvmProcessor
 } from "@subsquid/substrate-evm-processor"
 import * as erc721 from "./abi/erc721"
-import { CHAIN_NODE, createContractEntity } from "./contract"
+import * as erc1155 from "./abi/erc1155"
+import { CHAIN_NODE } from "./contract"
 import { Contracts } from './processable'
 import * as mappings from './mappings';
 
@@ -24,13 +25,21 @@ processor.setTypesBundle("moonbeam");
 
 processor.addPreHook({ range: { from: 0, to: 0 } }, mappings.forceCreateContract);
 
-processor.addEvmLogHandler(
-  Contracts.Moonsama,
-  {
-    filter: [erc721.events["Transfer(address,address,uint256)"].topic],
-  },
-  mappings.mainFrame
-);
+// processor.addEvmLogHandler(
+//   Contracts.Moonsama,
+//   {
+//     filter: [erc721.events["Transfer(address,address,uint256)"].topic],
+//   },
+//   mappings.mainFrame
+// );
+
+// processor.addEvmLogHandler(
+//   Contracts.Moonx,
+//   {
+//     filter: [erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].topic],
+//   },
+//   mappings.singleMainFrame
+// );
 
 // export async function contractLogsHandler(
 //   ctx: EvmLogHandlerContext
