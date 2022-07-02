@@ -1,4 +1,3 @@
-import { EvmLogHandlerContext } from '@subsquid/substrate-evm-processor'
 import { BlockHandlerContext, Store } from '@subsquid/substrate-processor'
 import md5 from 'md5'
 import {
@@ -6,16 +5,21 @@ import {
   MetadataEntity as Metadata,
   NFTEntity as NE
 } from '../model'
+import { ContractsMap } from '../processable'
 import { plsBe, real, remintable } from './utils/consolidator'
+import { EMPTY_ADDRESS } from './utils/constants'
 import { create, get, getOrCreate } from './utils/entity'
+import { decode721Transfer, whatIsThisTransfer } from './utils/evm'
 import { createTokenId, unwrap } from './utils/extract'
 import {
   getBurnTokenEvent, getCreateCollectionEvent,
-  getCreateTokenEvent, getTransferTokenEvent
+  getCreateTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
 } from './utils/getters'
 import { isEmpty } from './utils/helper'
 import logger, { logError, metaLog } from './utils/logger'
 import { fetchMetadata } from './utils/metadata'
+import { findAll1155Tokens } from './utils/query'
+import { serializer } from './utils/serializer'
 import {
   attributeFrom,
   BaseCall, Context, ensure,
@@ -24,10 +28,6 @@ import {
   Interaction, Optional,
   TokenMetadata
 } from './utils/types'
-import { decode721Transfer, whatIsThisTransfer } from './utils/evm'
-import { EMPTY_ADDRESS } from './utils/constants'
-import { serializer } from './utils/serializer'
-import { ContractsMap } from '../processable'
 
 async function handleMetadata(
   id: string,
@@ -201,7 +201,7 @@ export async function forceCreateContract(ctx: BlockHandlerContext) {
   await ctx.store.save(contracts);
 }
 
-export async function mainFrame(ctx: EvmLogHandlerContext): Promise<void> {
+export async function mainFrame(ctx: Context): Promise<void> {
     const transfer = decode721Transfer(ctx)
     switch (whatIsThisTransfer(transfer)) {
       case Interaction.MINTNFT:
@@ -219,6 +219,33 @@ export async function mainFrame(ctx: EvmLogHandlerContext): Promise<void> {
       default:
         logger.warn(`Unknown transfer: ${JSON.stringify(transfer, null, 2)}`)
     }
+}
+
+
+export async function multiMainFrame(): Promise<void> {
+
+}
+
+export async function handleUriChnage(context: Context): Promise<void> {
+  logger.pending(`[NEW URI]: ${context.substrate.block.height}`)
+  const event = unwrap(context, getTokenUriChangeEvent)
+  metaLog('NEW URI', event)
+  if (!event.metadata) {
+    logger.warn(`No metadata for ${event.collectionId}`)
+    return
+  }
+  const tokens = await findAll1155Tokens(context.store, event.collectionId, event.sn)
+  const metadata = await handleMetadata(event.metadata, context.store)
+  await context.store.save(metadata)
+  tokens.forEach((token) => {
+    token.metadata = event.metadata
+    token.updatedAt = event.timestamp
+    token.meta = metadata
+  })
+  // const entity = ensure<NE>(await get(context.store, NE, id))
+  // plsBe(real, entity)
+
+  await context.store.save(tokens);
 }
 
 
