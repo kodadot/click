@@ -4,6 +4,7 @@ import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { nanoid } from 'nanoid'
 import { createTokenId } from './extract'
 import { EvmLogHandlerContext } from '@subsquid/substrate-evm-processor'
+import md5 from 'md5'
 
 export type BaseCall = {
   caller: string;
@@ -93,24 +94,7 @@ export type BurnTokenEvent = BaseTokenEvent & {
 
 export type DestroyCollectionEvent = BaseCollectionEvent
 
-export type AddRoyaltyEvent = BaseTokenEvent & {
-  recipient: string;
-  royalty: number;
-}
-
-export type PayRoyaltyEvent = AddRoyaltyEvent & WithAmount
-
-export type BaseOfferEvent = BaseTokenEvent & WithCaller
-
-export type OfferWithAmountEvent = BaseOfferEvent & WithAmount
-
-export type AcceptOfferEvent = OfferWithAmountEvent & {
-  maker: string;
-}
-
-export type MakeOfferEvent = OfferWithAmountEvent & {
-  expiresAt: bigint;
-}
+export type ChangeMetadataEvent = BaseTokenEvent & OptionalMeta
 
 export type CallWith<T> = BaseCall & T
 
@@ -145,11 +129,9 @@ export const eventId = (id: string, event: Interaction) => `${id}-${event}-${nan
 
 export const createOfferId = (id: string, caller: string) => `${id}-${caller}`
 
-const offerIdFrom = (collectionId: string, id: string, caller: string) => createOfferId(createTokenId(collectionId, id), caller)
-
-export const offerIdOf = (call: CallWith<BaseOfferEvent>) => offerIdFrom(call.collectionId, call.sn, call.caller)
-
 export const tokenIdOf = (base: BaseTokenEvent) => createTokenId(base.collectionId, base.sn)
+
+export const fungibleTokenIdOf = (base: BaseTokenEvent & WithCaller) => `${createTokenId(base.collectionId, base.sn)}-${md5(base.caller)}`
 
 export type TokenMetadata = {
   name?: string
