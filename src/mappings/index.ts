@@ -1,7 +1,8 @@
 import { BlockHandlerContext, Store } from '@subsquid/substrate-processor'
 import md5 from 'md5'
+import { eitherOr } from '../contract'
 import {
-  CollectionEntity as CE, Event,
+  CollectionEntity as CE, CollectionType, Event,
   MetadataEntity as Metadata,
   NFTEntity as NE
 } from '../model'
@@ -9,11 +10,11 @@ import { ContractsMap } from '../processable'
 import { plsBe, real, remintable } from './utils/consolidator'
 import { EMPTY_ADDRESS } from './utils/constants'
 import { create, get, getOrCreate } from './utils/entity'
-import { decode721Transfer, whatIsThisTransfer } from './utils/evm'
+import { decode1155SingleTransfer, decode721Transfer, RealTransferEvent, whatIsThisTransfer } from './utils/evm'
 import { createTokenId, unwrap } from './utils/extract'
 import {
   getBurnTokenEvent, getCreateCollectionEvent,
-  getCreateTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
+  getCreateTokenEvent, getSingleCreateTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
 } from './utils/getters'
 import { isEmpty } from './utils/helper'
 import logger, { logError, metaLog } from './utils/logger'
@@ -26,7 +27,8 @@ import {
   eventFrom,
   eventId,
   Interaction, Optional,
-  TokenMetadata
+  TokenMetadata,
+  WithCount
 } from './utils/types'
 
 async function handleMetadata(
@@ -87,10 +89,11 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
   // await createCollectionEvent(final, Interaction.MINT, event, '', context.store)
 }
 
-export async function handleTokenCreate(context: Context): Promise<void> {
+export async function handleTokenCreate(context: Context, type: CollectionType = CollectionType.ERC721): Promise<void> {
   logger.pending(`[NFT++]: ${context.substrate.block.height}`)
-  const event = unwrap(context, getCreateTokenEvent)
-  logger.debug(`nft: ${JSON.stringify(event, serializer, 2)}`)
+  const call = eitherOr(type, getCreateTokenEvent, getSingleCreateTokenEvent)
+  const event = unwrap(context, call)
+  metaLog('Non-fungible', event)
   const id = createTokenId(event.collectionId, event.sn)
   const collection = ensure<CE>(
     await get<CE>(context.store, CE, event.collectionId)
@@ -111,7 +114,7 @@ export async function handleTokenCreate(context: Context): Promise<void> {
   final.burned = false
   final.createdAt = event.timestamp
   final.updatedAt = event.timestamp
-  final.count = 1
+  final.count = event.count
 
   logger.debug(`metadata: ${final.metadata}`)
 
@@ -203,29 +206,35 @@ export async function forceCreateContract(ctx: BlockHandlerContext) {
 }
 
 export async function mainFrame(ctx: Context): Promise<void> {
-    const transfer = decode721Transfer(ctx)
-    switch (whatIsThisTransfer(transfer)) {
-      case Interaction.MINTNFT:
-        metaLog(Interaction.MINTNFT, transfer)
-        await handleTokenCreate(ctx)
-        break
-      case Interaction.SEND:
-        metaLog(Interaction.SEND, transfer)
-        await handleTokenTransfer(ctx)
-        break
-      case Interaction.CONSUME:
-        metaLog(Interaction.CONSUME, transfer)
-        await handleTokenBurn(ctx)
-        break
-      default:
-        logger.warn(`Unknown transfer: ${JSON.stringify(transfer, null, 2)}`)
-    }
+  const transfer = decode721Transfer(ctx)
+  return technoBunker(ctx, transfer)
 }
 
 
-export async function multiMainFrame(): Promise<void> {
-
+export function singleMainFrame(ctx: Context): Promise<void> {
+  const transfer = decode1155SingleTransfer(ctx)
+  return technoBunker(ctx, transfer, CollectionType.ERC1155)
 }
+
+async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = CollectionType.ERC721) {
+  switch (whatIsThisTransfer(transfer)) {
+    case Interaction.MINTNFT:
+      metaLog(Interaction.MINTNFT, transfer)
+      await handleTokenCreate(ctx, type)
+      break
+    case Interaction.SEND:
+      metaLog(Interaction.SEND, transfer)
+      await handleTokenTransfer(ctx)
+      break
+    case Interaction.CONSUME:
+      metaLog(Interaction.CONSUME, transfer)
+      await handleTokenBurn(ctx)
+      break
+    default:
+      logger.warn(`Unknown transfer: ${JSON.stringify(transfer, null, 2)}`)
+  }
+}
+
 
 export async function handleUriChnage(context: Context): Promise<void> {
   logger.pending(`[NEW URI]: ${context.substrate.block.height}`)
