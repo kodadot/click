@@ -40,6 +40,6 @@ export function decode1155MutliTransfer(event: Context): erc1155.TransferBatch0E
   return erc1155.events["TransferBatch(address,address,address,uint256[],uint256[])"].decode(event)
 }
 
-export function decode1155Urichange(event: Context): erc1155.URI0Event {
+export function decode1155UriChange(event: Context): erc1155.URI0Event {
   return erc1155.events["URI(string,uint256)"].decode(event)
 }
