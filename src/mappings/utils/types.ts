@@ -69,7 +69,7 @@ export type CreateCollectionEvent = BaseCollectionEvent & OptionalMeta & {
   type: string;
 }
 
-export type CreateTokenEvent = BaseTokenEvent & {
+export type CreateTokenEvent = BaseTokenEvent & WithCount & {
   caller: string;
   metadata: Promise<string>;
 }
@@ -78,9 +78,7 @@ export type TransferTokenEvent = BaseTokenEvent & WithCaller & {
   to: string;
 }
 
-export type TransferSingleTokenEvent = TransferTokenEvent & {
-  count: number;
-}
+export type TransferSingleTokenEvent = TransferTokenEvent & WithCount
 
 export type TransferMultiTokenEvent = WithCaller & {
   sns: string[];
@@ -125,6 +123,10 @@ export type SomethingWithMeta = {
 
 export type SomethingWithOptionalMeta = {
   metadata?: string
+}
+
+export type WithCount = {
+  count: number;
 }
 
 export type UnwrapFunc<T> = (ctx: Context) => T
