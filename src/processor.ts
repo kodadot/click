@@ -2,12 +2,10 @@ import { lookupArchive } from "@subsquid/archive-registry"
 import {
   SubstrateEvmProcessor
 } from "@subsquid/substrate-evm-processor"
-import * as erc721 from "./abi/erc721"
-import * as erc1155 from "./abi/erc1155"
 import { CHAIN_NODE } from "./contract"
-import { Contracts } from './processable'
-import * as mappings from './mappings';
+import * as mappings from './mappings'
 import { transferFilter } from './mappings/utils/evm'
+import { Contracts } from './processable'
 
 const processor = new SubstrateEvmProcessor("moonriver-substrate");
 
