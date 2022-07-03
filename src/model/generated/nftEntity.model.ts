@@ -49,8 +49,17 @@ export class NFTEntity {
   @Column_("text", {nullable: true})
   name!: string | undefined | null
 
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+  price!: bigint | undefined | null
+
+  @Column_("int4", {nullable: true})
+  royalty!: number | undefined | null
+
   @Column_("text", {nullable: false})
   sn!: string
+
+  @Column_("int4", {nullable: false})
+  count!: number
 
   @Column_("timestamp with time zone", {nullable: false})
   updatedAt!: Date

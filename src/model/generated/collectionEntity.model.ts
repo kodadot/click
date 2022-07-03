@@ -2,6 +2,7 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, M
 import * as marshal from "./marshal"
 import {MetadataEntity} from "./metadataEntity.model"
 import {NFTEntity} from "./nftEntity.model"
+import {CollectionType} from "./_collectionType"
 
 @Entity_()
 export class CollectionEntity {
@@ -24,8 +25,8 @@ export class CollectionEntity {
   @Column_("text", {nullable: false})
   issuer!: string
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  max!: bigint
+  @Column_("int4", {nullable: false})
+  max!: number
 
   @Index_()
   @ManyToOne_(() => MetadataEntity, {nullable: true})
@@ -48,4 +49,7 @@ export class CollectionEntity {
 
   @Column_("timestamp with time zone", {nullable: false})
   updatedAt!: Date
+
+  @Column_("varchar", {length: 7, nullable: false})
+  type!: CollectionType
 }

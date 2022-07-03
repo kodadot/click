@@ -43,6 +43,8 @@ reset:
 	npx sqd db create
 	npx sqd db:migrate
 
+new-schema: codegen build update-db
+
 migrate:
 	npx sqd db:migrate
 
@@ -62,7 +64,7 @@ kill TAG:
 	npx sqd squid:kill click@{{TAG}}
 
 exec:
-	docker exec -it snek-db-1 psql -U postgres -d squid
+	docker exec -it click-db-1 psql -U postgres -d squid
 
 brutal TAG:
 	npx sqd squid:update click@{{TAG}} --hardReset

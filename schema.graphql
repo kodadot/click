@@ -4,7 +4,7 @@ type CollectionEntity @entity {
   createdAt: DateTime!
   currentOwner: String!
   issuer: String!
-  max: BigInt! # totalSupply
+  max: Int! # totalSupply
   meta: MetadataEntity
   burned: Boolean
   metadata: String
@@ -12,6 +12,7 @@ type CollectionEntity @entity {
   nfts: [NFTEntity!] @derivedFrom(field: "collection")
   symbol: String
   updatedAt: DateTime!
+  type: CollectionType!
 }
 
 type NFTEntity @entity {
@@ -27,7 +28,10 @@ type NFTEntity @entity {
   meta: MetadataEntity
   metadata: String
   name: String
+  price: BigInt
+  royalty: Int
   sn: String!
+  count: Int!
   updatedAt: DateTime!
 }
 
@@ -68,9 +72,16 @@ type Event implements EventType @entity {
   nft: NFTEntity!
 }
 
+enum CollectionType {
+  ERC721
+  ERC1155
+}
+
 enum Interaction {
   MINT
   MINTNFT
+  LIST
+  UNLIST
   BUY
   SEND
   CONSUME

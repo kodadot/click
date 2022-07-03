@@ -1,7 +1,9 @@
 import { assertNotNull, Store } from "@subsquid/substrate-evm-processor";
-import { ethers } from "ethers";
+import { ethers, Contract, ContractInterface } from "ethers";
 import * as erc721 from "./abi/erc721";
-import { CollectionEntity } from "./model";
+import * as erc1155 from "./abi/erc1155";
+import { CollectionEntity, CollectionType } from "./model";
+import { Contracts, ContractsMap } from "./processable";
  
 export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
 
@@ -10,13 +12,47 @@ export const contract = new ethers.Contract(
   erc721.abi,
   new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );
- 
+
+export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
+  return contractify(contract).tokenURI(tokenId).catch(() => "");
+}
+
+export const metadataFromUri = (contract: Contracts | string, tokenId: string): Promise<string> => {
+  const { type } = ContractsMap[contract as Contracts];
+  return type === CollectionType.ERC721 ? tokenUriOf(contract, tokenId) : uriOf(contract, tokenId);
+}
+
+export const uriOf = (contract: string, tokenId: string): Promise<string> => {
+  return contractify(contract, CollectionType.ERC1155).uri(tokenId).catch(() => "");
+}
+
+export const baseUriOf = (contract: string): Promise<string> => {
+  return contractify(contract).baseURI().catch(() => "");
+}
+
+function contractify(address: string, type = CollectionType.ERC721): Contract {
+  return new ethers.Contract(
+    address,
+    eitherOr(type, erc721.abi, erc1155.abi),
+    new ethers.providers.WebSocketProvider(CHAIN_NODE)
+  );
+}
+
+export function eitherOr<T>(type = CollectionType.ERC721, one: T, two: T): T {
+  return type === CollectionType.ERC721 ? one : two;
+}
+
 export function createContractEntity(): CollectionEntity {
   return new CollectionEntity({
     id: contract.address,
     name: "Moonsama",
     symbol: "MSAMA",
-    max: 1000n,
+    max: 1000,
+    currentOwner: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
+    issuer: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
+    updatedAt: new Date(),
+    createdAt: new Date(),
+    type: CollectionType.ERC721,
   });
 }
  

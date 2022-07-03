@@ -1,28 +1,34 @@
-import { EvmLogHandlerContext } from '@subsquid/substrate-evm-processor'
-import { Store } from '@subsquid/substrate-processor'
+import { BlockHandlerContext, Store } from '@subsquid/substrate-processor'
 import md5 from 'md5'
+import { eitherOr } from '../contract'
 import {
-  CollectionEntity as CE, Event,
+  CollectionEntity as CE, CollectionType, Event,
   MetadataEntity as Metadata,
   NFTEntity as NE
 } from '../model'
+import { ContractsMap } from '../processable'
 import { plsBe, real, remintable } from './utils/consolidator'
+import { EMPTY_ADDRESS } from './utils/constants'
 import { create, get, getOrCreate } from './utils/entity'
+import { decode1155SingleTransfer, decode721Transfer, RealTransferEvent, whatIsThisTransfer } from './utils/evm'
 import { createTokenId, unwrap } from './utils/extract'
 import {
   getBurnTokenEvent, getCreateCollectionEvent,
-  getCreateTokenEvent, getTransferTokenEvent
+  getCreateTokenEvent, getSingleCreateTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
 } from './utils/getters'
 import { isEmpty } from './utils/helper'
-import logger, { logError } from './utils/logger'
+import logger, { logError, metaLog } from './utils/logger'
 import { fetchMetadata } from './utils/metadata'
+import { findAll1155Tokens } from './utils/query'
+import { serializer } from './utils/serializer'
 import {
   attributeFrom,
   BaseCall, Context, ensure,
   eventFrom,
   eventId,
   Interaction, Optional,
-  TokenMetadata
+  TokenMetadata,
+  WithCount
 } from './utils/types'
 
 async function handleMetadata(
@@ -54,9 +60,9 @@ async function handleMetadata(
 }
 
 export async function handleCollectionCreate(context: Context): Promise<void> {
-  logger.pending(`[COLECTTION++]: ${context.event.blockNumber}`)
+  logger.pending(`[COLECTTION++]: ${context.substrate.block.height}`)
   const event = unwrap(context, getCreateCollectionEvent)
-  logger.debug(`collection: ${JSON.stringify(event, null, 2)}`)
+  logger.debug(`collection: ${JSON.stringify(event, serializer, 2)}`)
   const final = await getOrCreate<CE>(context.store, CE, event.id, {})
   plsBe(remintable, final)
 
@@ -64,7 +70,7 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
   final.issuer = event.caller
   final.currentOwner = event.caller
   final.blockNumber = BigInt(event.blockNumber)
-  final.metadata = event.metadata || 'ipfs://ipfs/bafkreiazeqysfmeuzqcnjp6rijxfu5h7sj3t4h2rxehi7rlyegzfy7lxeq'
+  // final.metadata = event.metadata || 'ipfs://ipfs/bafkreiazeqysfmeuzqcnjp6rijxfu5h7sj3t4h2rxehi7rlyegzfy7lxeq'
   final.burned = false
   final.createdAt = event.timestamp
   final.updatedAt = event.timestamp
@@ -83,10 +89,11 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
   // await createCollectionEvent(final, Interaction.MINT, event, '', context.store)
 }
 
-export async function handleTokenCreate(context: Context): Promise<void> {
-  logger.pending(`[NFT++]: ${context.event.blockNumber}`)
-  const event = unwrap(context, getCreateTokenEvent)
-  logger.debug(`nft: ${JSON.stringify(event, null, 2)}`)
+export async function handleTokenCreate(context: Context, type: CollectionType = CollectionType.ERC721): Promise<void> {
+  logger.pending(`[NFT++]: ${context.substrate.block.height}`)
+  const call = eitherOr(type, getCreateTokenEvent, getSingleCreateTokenEvent)
+  const event = unwrap(context, call)
+  metaLog('Non-fungible', event)
   const id = createTokenId(event.collectionId, event.sn)
   const collection = ensure<CE>(
     await get<CE>(context.store, CE, event.collectionId)
@@ -102,12 +109,14 @@ export async function handleTokenCreate(context: Context): Promise<void> {
   final.blockNumber = BigInt(event.blockNumber)
   final.collection = collection
   final.sn = event.sn
-  final.metadata = event.metadata || 'ipfs://ipfs/bafkreiazeqysfmeuzqcnjp6rijxfu5h7sj3t4h2rxehi7rlyegzfy7lxeq'
+  final.price = BigInt(0);
+  final.metadata = await event.metadata
   final.burned = false
   final.createdAt = event.timestamp
   final.updatedAt = event.timestamp
+  final.count = event.count
 
-  logger.debug(`metadata: ${event.metadata}`)
+  logger.debug(`metadata: ${final.metadata}`)
 
   if (final.metadata) {
     const metadata = await handleMetadata(final.metadata, context.store)
@@ -121,9 +130,9 @@ export async function handleTokenCreate(context: Context): Promise<void> {
 }
 
 export async function handleTokenTransfer(context: Context): Promise<void> {
-  logger.pending(`[SEND]: ${context.event.blockNumber}`)
+  logger.pending(`[SEND]: ${context.substrate.block.height}`)
   const event = unwrap(context, getTransferTokenEvent)
-  logger.debug(`send: ${JSON.stringify(event, null, 2)}`)
+  logger.debug(`send: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
   const entity = ensure<NE>(await get(context.store, NE, id))
   plsBe(real, entity)
@@ -138,14 +147,16 @@ export async function handleTokenTransfer(context: Context): Promise<void> {
 }
 
 export async function handleTokenBurn(context: Context): Promise<void> {
-  logger.pending(`[BURN]: ${context.event.blockNumber}`)
+  logger.pending(`[BURN]: ${context.substrate.block.height}`)
   const event = unwrap(context, getBurnTokenEvent)
-  logger.debug(`burn: ${JSON.stringify(event, null, 2)}`)
+  logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
   const entity = ensure<NE>(await get(context.store, NE, id))
   plsBe(real, entity)
 
   entity.burned = true
+  entity.currentOwner = EMPTY_ADDRESS
+
   logger.success(`[BURN] ${id} by ${event.caller}`)
   await context.store.save(entity)
   const meta = entity.metadata ?? ''
@@ -177,6 +188,74 @@ async function createEvent(
       logger.warn(`[[${interaction}]]: ${final.id} Reason: ${e.message}`)
     )
   }
+}
+
+
+export async function forceCreateContract(ctx: BlockHandlerContext) {
+  const contracts = Object.entries(ContractsMap).map(([id, contract]) => {
+    metaLog('Building CONTRACT', { id, name: contract.name })
+    return new CE({
+      id,
+      ...contract
+    })
+  })
+
+  metaLog('CONTRACT DONE', { count: contracts.length })
+  
+  await ctx.store.save(contracts);
+}
+
+export async function mainFrame(ctx: Context): Promise<void> {
+  const transfer = decode721Transfer(ctx)
+  return technoBunker(ctx, transfer)
+}
+
+
+export function singleMainFrame(ctx: Context): Promise<void> {
+  const transfer = decode1155SingleTransfer(ctx)
+  return technoBunker(ctx, transfer, CollectionType.ERC1155)
+}
+
+async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = CollectionType.ERC721) {
+  switch (whatIsThisTransfer(transfer)) {
+    case Interaction.MINTNFT:
+      metaLog(Interaction.MINTNFT, transfer)
+      await handleTokenCreate(ctx, type)
+      break
+    case Interaction.SEND:
+      metaLog(Interaction.SEND, transfer)
+      await handleTokenTransfer(ctx)
+      break
+    case Interaction.CONSUME:
+      metaLog(Interaction.CONSUME, transfer)
+      await handleTokenBurn(ctx)
+      break
+    default:
+      logger.warn(`Unknown transfer: ${JSON.stringify(transfer, null, 2)}`)
+  }
+}
+
+
+export async function handleUriChnage(context: Context): Promise<void> {
+  logger.pending(`[NEW URI]: ${context.substrate.block.height}`)
+  const event = unwrap(context, getTokenUriChangeEvent)
+  metaLog('NEW URI', event)
+  if (!event.metadata) {
+    logger.warn(`No metadata for ${event.collectionId}`)
+    return
+  }
+  const tokens = await findAll1155Tokens(context.store, event.collectionId, event.sn)
+  const metadata = await handleMetadata(event.metadata, context.store)
+  await context.store.save(metadata)
+  tokens.forEach((token) => {
+    token.metadata = event.metadata
+    token.updatedAt = event.timestamp
+    token.meta = metadata
+  })
+  // const entity = ensure<NE>(await get(context.store, NE, id))
+  // plsBe(real, entity)
+
+  await context.store.save(tokens);
 }
 
 

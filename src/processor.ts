@@ -1,11 +1,11 @@
+import { lookupArchive } from "@subsquid/archive-registry"
 import {
-  EvmLogHandlerContext,
-  SubstrateEvmProcessor,
-} from "@subsquid/substrate-evm-processor";
-import { lookupArchive } from "@subsquid/archive-registry";
-import { CHAIN_NODE, contract, createContractEntity } from "./contract";
-import * as erc721 from "./abi/erc721";
-import logger from './mappings/utils/logger'
+  SubstrateEvmProcessor
+} from "@subsquid/substrate-evm-processor"
+import { CHAIN_NODE } from "./contract"
+import * as mappings from './mappings'
+import { transferFilter } from './mappings/utils/evm'
+import { Contracts } from './processable'
 
 const processor = new SubstrateEvmProcessor("moonriver-substrate");
 
@@ -22,27 +22,31 @@ processor.setTypesBundle("moonbeam");
 //   await ctx.store.save(createContractEntity());
 // });
 
-processor.addEvmLogHandler(
-  contract.address,
-  {
-    filter: [erc721.events["Transfer(address,address,uint256)"].topic],
-  },
-  contractLogsHandler
-);
+processor.addPreHook({ range: { from: 0, to: 0 } }, mappings.forceCreateContract);
 
-export async function contractLogsHandler(
-  ctx: EvmLogHandlerContext
-): Promise<void> {
-  const transfer =
-    erc721.events["Transfer(address,address,uint256)"].decode(ctx);
+processor.addEvmLogHandler(Contracts.Moonsama, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.Pondsama, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.Plot, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.Blvck, transferFilter, mappings.mainFrame);
 
-    logger.debug(`Transfer: ${JSON.stringify(transfer)}`)
-    logger.debug(`contractAddress: ${ctx.contractAddress}`)
-    const caller = ctx.substrate.extrinsic?.signer.toString() || ''; 
-    const blockNumber = ctx.substrate.block.height.toString();
-    const timestamp = new Date(ctx.substrate.block.timestamp);
-    logger.debug(`BASE: ${JSON.stringify({ caller, blockNumber, timestamp })}`)
-  
-}
+// processor.addEvmLogHandler(
+//   Contracts.Moonx,
+//   {
+//     filter: [erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].topic],
+//   },
+//   mappings.singleMainFrame
+// );
+
+// export async function contractLogsHandler(
+//   ctx: EvmLogHandlerContext
+// ): Promise<void> {
+//   const transfer = decode721Transfer(ctx)
+
+//   const data = unwrap(ctx, () => {})
+
+//   logger.debug(`Transfer: ${JSON.stringify(transfer)}`)
+//   logger.debug(`contractAddress: ${ctx.contractAddress}`)
+//   metaLog('BASE', data)
+// }
 
 processor.run();
