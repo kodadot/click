@@ -2,6 +2,7 @@ import { EMPTY_ADDRESS } from './constants'
 import * as erc721 from '../../abi/erc721'
 import * as erc1155 from '../../abi/erc1155'
 import { Context, Interaction } from './types'
+import { EvmLogHandlerOptions } from '@subsquid/substrate-evm-processor'
 
 export type RealTransferEvent = erc721.TransferAddressAddressUint256Event | erc1155.TransferSingle0Event | erc1155.TransferBatch0Event
 
@@ -44,4 +45,20 @@ export function decode1155MutliTransfer(event: Context): erc1155.TransferBatch0E
 
 export function decode1155UriChange(event: Context): erc1155.URI0Event {
   return erc1155.events["URI(string,uint256)"].decode(event)
+}
+
+export const transferFilter: EvmLogHandlerOptions = {
+  filter: [erc721.events["Transfer(address,address,uint256)"].topic],
+}
+
+export const singleTransferFilter: EvmLogHandlerOptions = {
+  filter: [erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].topic],
+}
+
+export const multiTransferFilter: EvmLogHandlerOptions = {
+  filter: [erc1155.events["TransferBatch(address,address,address,uint256[],uint256[])"].topic],
+}
+
+export const uriChangeFilter: EvmLogHandlerOptions = {
+  filter: [erc1155.events["URI(string,uint256)"].topic],
 }

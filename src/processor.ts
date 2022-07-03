@@ -7,6 +7,7 @@ import * as erc1155 from "./abi/erc1155"
 import { CHAIN_NODE } from "./contract"
 import { Contracts } from './processable'
 import * as mappings from './mappings';
+import { transferFilter } from './mappings/utils/evm'
 
 const processor = new SubstrateEvmProcessor("moonriver-substrate");
 
@@ -25,13 +26,7 @@ processor.setTypesBundle("moonbeam");
 
 processor.addPreHook({ range: { from: 0, to: 0 } }, mappings.forceCreateContract);
 
-// processor.addEvmLogHandler(
-//   Contracts.Moonsama,
-//   {
-//     filter: [erc721.events["Transfer(address,address,uint256)"].topic],
-//   },
-//   mappings.mainFrame
-// );
+processor.addEvmLogHandler(Contracts.Moonsama, transferFilter, mappings.mainFrame);
 
 // processor.addEvmLogHandler(
 //   Contracts.Moonx,
