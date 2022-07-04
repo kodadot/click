@@ -5,7 +5,8 @@ import * as erc1155 from "./abi/erc1155";
 import { CollectionEntity, CollectionType } from "./model";
 import { Contracts, ContractsMap } from "./processable";
  
-export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
+export const CHAIN_NODE = "wss://moonriver.api.onfinality.io/public-ws"
+// export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
 
 export const contract = new ethers.Contract(
   "0xb654611f84a8dc429ba3cb4fda9fad236c505a1a",
