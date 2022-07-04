@@ -37,13 +37,14 @@ export const fetchMetadata = async <T>(
       return ensure<T>({})
     }
 
-    const { status, data } = await api.get(sanitizer(rmrk.metadata))
+    const { status, data } = await api.get<T>(sanitizer(rmrk.metadata))
     logger.watch('[IPFS]', status, rmrk.metadata)
     if (status < 400) {
-      return data as T
+      return data
     }
   } catch (e) {
-    logger.warn('IPFS Err', e)
+    logger.warn('[IPFS] ERROR', (e as Error).message)
+    return ensure<T>({})
   }
 
   return ensure<T>({})
