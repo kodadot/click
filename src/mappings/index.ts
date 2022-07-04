@@ -1,6 +1,6 @@
 import { BlockHandlerContext, Store } from '@subsquid/substrate-processor'
 import md5 from 'md5'
-import { eitherOr } from '../contract'
+import { eitherOr, isERC721 } from '../contract'
 import {
   CollectionEntity as CE, CollectionType, Event,
   MetadataEntity as Metadata,
@@ -11,7 +11,7 @@ import { plsBe, real, remintable } from './utils/consolidator'
 import { EMPTY_ADDRESS } from './utils/constants'
 import { create, get, getOrCreate } from './utils/entity'
 import { decode1155SingleTransfer, decode721Transfer, RealTransferEvent, whatIsThisTransfer } from './utils/evm'
-import { createTokenId, unwrap } from './utils/extract'
+import { createFungibleTokenId, createTokenId, unwrap } from './utils/extract'
 import {
   getBurnTokenEvent, getCreateCollectionEvent,
   getCreateTokenEvent, getSingleCreateTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
@@ -94,7 +94,7 @@ export async function handleTokenCreate(context: Context, type: CollectionType =
   const call = eitherOr(type, getCreateTokenEvent, getSingleCreateTokenEvent)
   const event = unwrap(context, call)
   metaLog('Non-fungible', event)
-  const id = createTokenId(event.collectionId, event.sn)
+  const id = isERC721(type) ? createTokenId(event.collectionId, event.sn) : createFungibleTokenId(event.collectionId, event.sn, event.caller)
   const collection = ensure<CE>(
     await get<CE>(context.store, CE, event.collectionId)
   )
