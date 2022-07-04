@@ -17,15 +17,15 @@ export enum Contracts {
 }
 
 export const ContractsMap: Record<Contracts, any>  = {
-  [Contracts.Moonsama]: toMap('Moonsama', 'MSAMA', 1000, 'QmWH3SmNPvHk8wRSojHk4ARLUcfFkvW6dECdTfvaM8APtG'),
-  [Contracts.Pondsama]: toMap('Pondsama', 'PONDSAMA', 5715, 'QmTDjazcg4zvvnzvAHnwkpprttFYt3jKzwkAdRVn7XmqVE'),
-  [Contracts.Moonx]: toMap('MoonX', 'MX', 0, 'QmdWRvx6GX1WQV4N7S3d8Yv6dqb4FB5NpCPag4DNQsfvp2', CollectionType.ERC1155),
-  [Contracts.Factory]: toMap('Moonsama Multiverse Asset Factory', 'MMAF', 0, 'QmPXrp2YcqzzMrUD9VgN5xgQcosxmVpBXyGuFK9FmFNi18', CollectionType.ERC1155),
-  [Contracts.Art]: toMap('Moonsama Multiverse Art', 'MMA', 0, 'QmUdFKHa6GhwTxQL5hkeHwxyoHaigcsXrisSRb2EmP5H3S', CollectionType.ERC1155),
-  [Contracts.Plot]: toMap('Moonsama Minecraft Plots Season 1', 'MMPLOTS1', 338, 'QmacMxjCTQWY3uhpgDYxDn6xuq2DFXR4fn7RvZtCiUKFUg'),
-  [Contracts.Box]: toMap('SamaBox', 'SAMABOX', 0, 'QmVBPfRFPK8Hs7LtZczHRNiacxUxt6NhWNcAaFinVJgewA', CollectionType.ERC1155),
-  [Contracts.Embassy]: toMap('MoonsamaEmbassy', 'MEMBASSY', 0, 'Qmb5HvfNRuJAZZxubvpqCDrZ1ubjnSHXird93F43ceF5WW', CollectionType.ERC1155),
-  [Contracts.Blvck]: toMap('BlvckMarketNFT', 'BMANFT', 1333, 'QmNzjvkBFQgtmZPJmBdVdEbLokGrb13UY9fNGwwJcPHrZs'),
+  [Contracts.Moonsama]: toMap('Moonsama', 'MSAMA', 1000, 'QmPhFz5mKCtndGLLZBwGockGAWz7o7nef4Kgf37gYsTid5'),
+  [Contracts.Pondsama]: toMap('Pondsama', 'PONDSAMA', 5715, 'QmdCKgexLpBjST3FdWLbPZLH2FWRtu2NXE9dk5ZirdDRGb'),
+  [Contracts.Moonx]: toMap('MoonX', 'MX', 67, 'QmWox8YqUaYVxSSB7GRhPAuczv6auL8QrkDrkMTcqGEGKA', CollectionType.ERC1155),
+  [Contracts.Factory]: toMap('Moonsama Multiverse Asset Factory', 'MMAF', 11, 'Qmc97e79xzzrdNuU3RumGXcK5FYh8PWTb6GyxxHMyRvUYm', CollectionType.ERC1155),
+  [Contracts.Art]: toMap('Moonsama Multiverse Art', 'MMA', 28, 'QmUCMVkJa849UQYN728hyiYm3ZJVPk8yGyiJQ6wwHfLcgz', CollectionType.ERC1155),
+  [Contracts.Plot]: toMap('Moonsama Minecraft Plots Season 1', 'MMPLOTS1', 338, 'QmR8K7eLZnhFqC5qUStMyFAgawSJcpRfSvMDMffQVQFn38'),
+  [Contracts.Box]: toMap('SamaBox', 'SAMABOX', 2, 'QmPisJNXRvd1h8BBiBs1PHu8666HTDWVJWkAf2AS7c4zkM', CollectionType.ERC1155),
+  [Contracts.Embassy]: toMap('MoonsamaEmbassy', 'MEMBASSY', 4, 'QmWzBDhV5nuPrud7XZo2vBLBWtTStwc6N8xSwCzuMdewd8', CollectionType.ERC1155),
+  [Contracts.Blvck]: toMap('BlvckMarketNFT', 'BMANFT', 1333, 'QmVQPRFZq7XZNk79C75ynqPRPdpPaX8bmH4Cb9KhrN1PfH'),
 }
 
 function toMap(name: string, symbol: string, max: number, meta: string, type: CollectionType = CollectionType.ERC721): Partial<CollectionEntity> {
@@ -34,7 +34,7 @@ function toMap(name: string, symbol: string, max: number, meta: string, type: Co
     symbol,
     max,
     type,
-    // metadata: meta ? `ipfs://ipfs/${meta}` : undefined,
+    metadata: meta ? `ipfs://ipfs/${meta}` : undefined,
     currentOwner: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
     issuer: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
     updatedAt: new Date(),
