@@ -32,3 +32,5 @@ export function unwrap<T>(ctx: Context, unwrapFn: UnwrapFunc<T>): CallWith<T> {
 
 export const createTokenId = (collection: string, id: string) => `${collection}-${id}`
 
+export const createFungibleTokenId = (collection: string, id: string, caller: string) => `${createTokenId(collection, id)}-${caller}`
+
