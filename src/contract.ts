@@ -19,7 +19,7 @@ export const tokenUriOf = (contract: string, tokenId: string): Promise<string> =
 
 export const metadataFromUri = (contract: Contracts | string, tokenId: string): Promise<string> => {
   const { type } = ContractsMap[contract as Contracts];
-  return type === CollectionType.ERC721 ? tokenUriOf(contract, tokenId) : uriOf(contract, tokenId);
+  return isERC721(type) ? tokenUriOf(contract, tokenId) : uriOf(contract, tokenId);
 }
 
 export const uriOf = (contract: string, tokenId: string): Promise<string> => {
@@ -39,7 +39,11 @@ function contractify(address: string, type = CollectionType.ERC721): Contract {
 }
 
 export function eitherOr<T>(type = CollectionType.ERC721, one: T, two: T): T {
-  return type === CollectionType.ERC721 ? one : two;
+  return isERC721(type) ? one : two;
+}
+
+export function isERC721(type: CollectionType): boolean {
+  return type === CollectionType.ERC721;
 }
 
 export function createContractEntity(): CollectionEntity {
