@@ -18,14 +18,14 @@ export enum Contracts {
 
 export const ContractsMap: Record<Contracts, any>  = {
   [Contracts.Moonsama]: toMap('Moonsama', 'MSAMA', 1000, 'QmPhFz5mKCtndGLLZBwGockGAWz7o7nef4Kgf37gYsTid5'),
-  [Contracts.Pondsama]: toMap('Pondsama', 'PONDSAMA', 5715, ''),
+  [Contracts.Pondsama]: toMap('Pondsama', 'PONDSAMA', 5715, 'QmdCKgexLpBjST3FdWLbPZLH2FWRtu2NXE9dk5ZirdDRGb'),
   [Contracts.Moonx]: toMap('MoonX', 'MX', 67, 'QmWox8YqUaYVxSSB7GRhPAuczv6auL8QrkDrkMTcqGEGKA', CollectionType.ERC1155),
   [Contracts.Factory]: toMap('Moonsama Multiverse Asset Factory', 'MMAF', 11, 'Qmc97e79xzzrdNuU3RumGXcK5FYh8PWTb6GyxxHMyRvUYm', CollectionType.ERC1155),
   [Contracts.Art]: toMap('Moonsama Multiverse Art', 'MMA', 28, 'QmUCMVkJa849UQYN728hyiYm3ZJVPk8yGyiJQ6wwHfLcgz', CollectionType.ERC1155),
   [Contracts.Plot]: toMap('Moonsama Minecraft Plots Season 1', 'MMPLOTS1', 338, 'QmR8K7eLZnhFqC5qUStMyFAgawSJcpRfSvMDMffQVQFn38'),
   [Contracts.Box]: toMap('SamaBox', 'SAMABOX', 2, 'QmPisJNXRvd1h8BBiBs1PHu8666HTDWVJWkAf2AS7c4zkM', CollectionType.ERC1155),
   [Contracts.Embassy]: toMap('MoonsamaEmbassy', 'MEMBASSY', 4, 'QmWzBDhV5nuPrud7XZo2vBLBWtTStwc6N8xSwCzuMdewd8', CollectionType.ERC1155),
-  [Contracts.Blvck]: toMap('BlvckMarketNFT', 'BMANFT', 1333, ''),
+  [Contracts.Blvck]: toMap('BlvckMarketNFT', 'BMANFT', 1333, 'QmVQPRFZq7XZNk79C75ynqPRPdpPaX8bmH4Cb9KhrN1PfH'),
 }
 
 function toMap(name: string, symbol: string, max: number, meta: string, type: CollectionType = CollectionType.ERC721): Partial<CollectionEntity> {
