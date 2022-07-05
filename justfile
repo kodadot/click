@@ -73,5 +73,5 @@ update-deps:
 	npx npm-check-updates -u
 
 tail TAG:
-	npx sqd squid:tail click@{{TAG}} -f
+	npx sqd squid logs click@{{TAG}} -f
 
