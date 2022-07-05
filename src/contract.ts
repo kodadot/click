@@ -6,13 +6,24 @@ import { CollectionEntity, CollectionType } from "./model";
 import { Contracts, ContractsMap } from "./processable";
  
 export const CHAIN_NODE = "wss://public-rpc.pinknode.io/moonriver"
-// export const CHAIN_NODE = "wss://moonriver.api.onfinality.io/public-ws"
+export const HTTP_NODE = "https://moonriver.api.onfinality.io/public"
+
+export const provider = new ethers.providers.StaticJsonRpcProvider(HTTP_NODE, {
+  chainId: 1285,
+  name: 'moonriver'
+})
 // export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
 
 export const contract = new ethers.Contract(
   "0xb654611f84a8dc429ba3cb4fda9fad236c505a1a",
   erc721.abi,
-  new ethers.providers.WebSocketProvider(CHAIN_NODE)
+  provider
+);
+
+export const multiContract = new ethers.Contract(
+  "0x1974eeaf317ecf792ff307f25a3521c35eecde86",
+  erc1155.abi,
+  provider
 );
 
 export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
