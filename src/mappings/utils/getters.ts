@@ -1,5 +1,5 @@
 import { tokenUriOf, uriOf } from '../../contract'
-import { decode1155MutliTransfer, decode1155SingleTransfer, decode1155UriChange, decode721Transfer } from './evm'
+import { decode1155SingleTransfer, decode1155UriChange, decode721Transfer } from './evm'
 import { contractOf } from './extract'
 import {
   BurnSingleTokenEvent,
@@ -10,7 +10,6 @@ import {
   CreateTokenEvent,
   TransferSingleTokenEvent,
   TransferTokenEvent,
-  WithCount
 } from './types'
 
 export function getCreateCollectionEvent(ctx: Context): CreateCollectionEvent {
