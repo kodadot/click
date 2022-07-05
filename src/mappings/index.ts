@@ -129,7 +129,7 @@ export async function handleTokenCreate(context: Context): Promise<void> {
 
 export async function handleSingleTokenCreate(context: Context, fromTransfer: boolean = false): Promise<void> {
   if (!fromTransfer) {
-    logger.pending(`[NFT++]: ${context.substrate.block.height}`)
+    logger.pending(`[Single NFT++]: ${context.substrate.block.height}`)
   }
   const event = unwrap(context, getSingleCreateTokenEvent)
   metaLog('Fungible', event)
@@ -177,14 +177,18 @@ export async function handleSingleTokenCreate(context: Context, fromTransfer: bo
 export async function handleSingleTokenTransfer(context: Context): Promise<void> {
   logger.pending(`[SEND]: ${context.substrate.block.height}`)
   const event = unwrap(context, getSingleTransferTokenEvent)
-  logger.debug(`send: ${JSON.stringify(event, serializer, 2)}`)
+  if (event.count === 0) {
+    logger.warn(`[SEND] ${event.caller} sent 0 tokens`)
+    return
+  }
+
+  logger.debug(`[SEND]: DO BURN`)
   await handleSingleTokenBurn(context, true)
+  logger.debug(`[SEND]: DO CREATE`)
   await handleSingleTokenCreate(context, true)
   logger.success(
     `[SEND] from ${event.caller} to ${event.to}`
   )
-  
-  
 }
 
 export async function handleSingleTokenBurn(context: Context, fromTransfer: boolean = false): Promise<void> {
@@ -193,7 +197,7 @@ export async function handleSingleTokenBurn(context: Context, fromTransfer: bool
   }
   const event = unwrap(context, getSingleBurnTokenEvent)
   logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
-  const id = createTokenId(event.collectionId, event.sn)
+  const id = createFungibleTokenId(event.collectionId, event.sn, event.caller)
   const entity = ensure<NE>(await get(context.store, NE, id))
   plsBe(real, entity)
 
