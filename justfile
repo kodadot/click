@@ -73,7 +73,7 @@ update-deps:
 	npx npm-check-updates -u
 
 tail TAG:
-	npx sqd squid:tail click@{{TAG}} -f
+	npx sqd squid logs click@{{TAG}} -f
 
 dump:
 	docker exec -i click-db-1 /bin/bash -c "pg_dump --username postgres squid" > dump.sql
