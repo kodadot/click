@@ -26,12 +26,6 @@ export const multiContract = new ethers.Contract(
   provider
 );
 
-export const multiContract = new ethers.Contract(
-  "0x1974eeaf317ecf792ff307f25a3521c35eecde86",
-  erc1155.abi,
-  new ethers.providers.WebSocketProvider(CHAIN_NODE)
-);
-
 export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
   return contractify(contract).tokenURI(tokenId).catch(() => "");
 }
