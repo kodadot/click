@@ -1,5 +1,6 @@
 import { BlockHandlerContext, Store } from '@subsquid/substrate-processor'
 import md5 from 'md5'
+import { isERC721 } from '../contract'
 import {
   CollectionEntity as CE, CollectionType, Event,
   MetadataEntity as Metadata,
@@ -177,8 +178,8 @@ export async function handleSingleTokenTransfer(context: Context): Promise<void>
   logger.pending(`[SEND]: ${context.substrate.block.height}`)
   const event = unwrap(context, getSingleTransferTokenEvent)
   logger.debug(`send: ${JSON.stringify(event, serializer, 2)}`)
-  await handleSingleTokenBurn(context)
-  await handleSingleTokenCreate(context)
+  await handleSingleTokenBurn(context, true)
+  await handleSingleTokenCreate(context, true)
   logger.success(
     `[SEND] from ${event.caller} to ${event.to}`
   )
@@ -304,15 +305,18 @@ async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = Co
   switch (whatIsThisTransfer(transfer)) {
     case Interaction.MINTNFT:
       metaLog(Interaction.MINTNFT, transfer)
-      await handleTokenCreate(ctx)
+      const createCb = isERC721(type) ? handleTokenCreate : handleSingleTokenCreate
+      await createCb(ctx)
       break
     case Interaction.SEND:
       metaLog(Interaction.SEND, transfer)
-      await handleTokenTransfer(ctx)
+      const transferCb = isERC721(type) ? handleTokenTransfer : handleSingleTokenTransfer
+      await transferCb(ctx)
       break
     case Interaction.CONSUME:
       metaLog(Interaction.CONSUME, transfer)
-      await handleTokenBurn(ctx)
+      const burnCb = isERC721(type) ? handleTokenBurn : handleSingleTokenBurn
+      await burnCb(ctx)
       break
     default:
       logger.warn(`Unknown transfer: ${JSON.stringify(transfer, null, 2)}`)

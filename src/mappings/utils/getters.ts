@@ -29,8 +29,8 @@ export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
 export function getSingleCreateTokenEvent(ctx: Context): CreateTokenEvent {
   const { to, id: tokenId, value } = decode1155SingleTransfer(ctx)
   const collectionId = contractOf(ctx)
-  // const metadata = uriOf(collectionId, tokenId.toString())
-  const metadata = Promise.resolve('')
+  const metadata = uriOf(collectionId, tokenId.toString())
+  // const metadata = Promise.resolve('')
 
   return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: value.toNumber() }
 }
