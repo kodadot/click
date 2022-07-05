@@ -32,11 +32,12 @@ export const baseUriOf = (contract: string): Promise<string> => {
 }
 
 function contractify(address: string, type = CollectionType.ERC721): Contract {
-  return new ethers.Contract(
-    address,
-    eitherOr(type, erc721.abi, erc1155.abi),
-    new ethers.providers.WebSocketProvider(CHAIN_NODE)
-  );
+  return contract.attach(address);
+  // return new ethers.Contract(
+  //   address,
+  //   eitherOr(type, erc721.abi, erc1155.abi),
+  //   new ethers.providers.WebSocketProvider(CHAIN_NODE)
+  // );
 }
 
 export function eitherOr<T>(type = CollectionType.ERC721, one: T, two: T): T {
