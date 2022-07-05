@@ -21,7 +21,8 @@ export function getCreateCollectionEvent(ctx: Context): CreateCollectionEvent {
 export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
   const { to, tokenId } = decode721Transfer(ctx)
   const collectionId = contractOf(ctx)
-  const metadata = tokenUriOf(collectionId, tokenId.toString())
+  // const metadata = tokenUriOf(collectionId, tokenId.toString())
+  const metadata = Promise.resolve('')
 
   return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: 1 }
 }
@@ -29,7 +30,8 @@ export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
 export function getSingleCreateTokenEvent(ctx: Context): CreateTokenEvent {
   const { to, id: tokenId, value } = decode1155SingleTransfer(ctx)
   const collectionId = contractOf(ctx)
-  const metadata = uriOf(collectionId, tokenId.toString())
+  // const metadata = uriOf(collectionId, tokenId.toString())
+  const metadata = Promise.resolve('')
 
   return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: value.toNumber() }
 }
