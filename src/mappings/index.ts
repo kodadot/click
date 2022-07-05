@@ -89,12 +89,11 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
   // await createCollectionEvent(final, Interaction.MINT, event, '', context.store)
 }
 
-export async function handleTokenCreate(context: Context, type: CollectionType = CollectionType.ERC721): Promise<void> {
+export async function handleTokenCreate(context: Context): Promise<void> {
   logger.pending(`[NFT++]: ${context.substrate.block.height}`)
-  const call = eitherOr(type, getCreateTokenEvent, getSingleCreateTokenEvent)
-  const event = unwrap(context, call)
+  const event = unwrap(context, getCreateTokenEvent)
   metaLog('Non-fungible', event)
-  const id = isERC721(type) ? createTokenId(event.collectionId, event.sn) : createFungibleTokenId(event.collectionId, event.sn, event.caller)
+  const id = createTokenId(event.collectionId, event.sn)
   const collection = ensure<CE>(
     await get<CE>(context.store, CE, event.collectionId)
   )
@@ -216,11 +215,11 @@ export function singleMainFrame(ctx: Context): Promise<void> {
   return technoBunker(ctx, transfer, CollectionType.ERC1155)
 }
 
-async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = CollectionType.ERC721) {
+async function technoBunker(ctx: Context, transfer: RealTransferEvent) {
   switch (whatIsThisTransfer(transfer)) {
     case Interaction.MINTNFT:
       metaLog(Interaction.MINTNFT, transfer)
-      await handleTokenCreate(ctx, type)
+      await handleTokenCreate(ctx)
       break
     case Interaction.SEND:
       metaLog(Interaction.SEND, transfer)
