@@ -95,9 +95,9 @@ export type BuyTokenEvent = ListTokenEvent & {
   currentOwner: string;
 }
 
-export type BurnTokenEvent = BaseTokenEvent & {
-  caller: string
-}
+export type BurnTokenEvent = BaseTokenEvent & WithCaller
+
+export type BurnSingleTokenEvent = BurnTokenEvent & WithCount
 
 export type DestroyCollectionEvent = BaseCollectionEvent
 
