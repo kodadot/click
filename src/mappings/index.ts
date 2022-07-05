@@ -1,6 +1,5 @@
 import { BlockHandlerContext, Store } from '@subsquid/substrate-processor'
 import md5 from 'md5'
-import { eitherOr, isERC721 } from '../contract'
 import {
   CollectionEntity as CE, CollectionType, Event,
   MetadataEntity as Metadata,
@@ -23,13 +22,11 @@ import { findAll1155Tokens } from './utils/query'
 import { serializer } from './utils/serializer'
 import {
   attributeFrom,
-  BaseCall, Context, CreateTokenEvent, ensure,
+  BaseCall, Context, ensure,
   eventFrom,
   eventId,
   Interaction, Optional,
-  TokenMetadata,
-  TransferSingleTokenEvent,
-  WithCount
+  TokenMetadata
 } from './utils/types'
 
 async function handleMetadata(

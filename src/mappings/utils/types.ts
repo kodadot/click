@@ -1,10 +1,9 @@
-import { Interaction } from '../../model/generated/_interaction'
-import { Attribute } from '../../model/generated/_attribute'
-import { EventHandlerContext } from '@subsquid/substrate-processor'
-import { nanoid } from 'nanoid'
-import { createTokenId } from './extract'
 import { EvmLogHandlerContext } from '@subsquid/substrate-evm-processor'
 import md5 from 'md5'
+import { nanoid } from 'nanoid'
+import { Attribute } from '../../model/generated/_attribute'
+import { Interaction } from '../../model/generated/_interaction'
+import { createTokenId } from './extract'
 
 export type BaseCall = {
   caller: string;

@@ -4,7 +4,7 @@ import {
 } from "@subsquid/substrate-evm-processor"
 import { CHAIN_NODE } from "./contract"
 import * as mappings from './mappings'
-import { transferFilter, singleTransferFilter } from './mappings/utils/evm'
+import { singleTransferFilter } from './mappings/utils/evm'
 import { Contracts } from './processable'
 
 const processor = new SubstrateEvmProcessor("moonriver-substrate");

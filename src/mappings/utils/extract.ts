@@ -1,16 +1,6 @@
 
 import { BaseCall, CallWith, Context, UnwrapFunc } from './types'
 
-
-// function toBaseCall(extrinsic: ExtrinsicHandlerContext): BaseCall {
-//   const caller = extrinsic.extrinsic.signer.toString();
-//   const blockNumber = extrinsic.block.height.toString();
-//   const timestamp = new Date(extrinsic.block.timestamp);
-
-//   return { caller, blockNumber, timestamp };
-// }
-
-
 function toBaseEvent(event: Context): BaseCall {
   const caller = event.substrate.extrinsic?.signer.toString() || ''; 
   const blockNumber = event.substrate.block.height.toString();
