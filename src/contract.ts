@@ -1,6 +1,7 @@
 import { assertNotNull, Store } from "@subsquid/substrate-evm-processor"
 import { Contract, ethers } from "ethers"
 import * as erc721 from "./abi/erc721"
+import * as erc1155 from "./abi/erc1155"
 import { CollectionEntity, CollectionType } from "./model"
 import { Contracts, ContractsMap } from "./processable"
  
@@ -10,6 +11,12 @@ export const CHAIN_NODE = "wss://moonriver.api.onfinality.io/public-ws"
 export const contract = new ethers.Contract(
   "0xb654611f84a8dc429ba3cb4fda9fad236c505a1a",
   erc721.abi,
+  new ethers.providers.WebSocketProvider(CHAIN_NODE)
+);
+
+export const multiContract = new ethers.Contract(
+  "0x1974eeaf317ecf792ff307f25a3521c35eecde86",
+  erc1155.abi,
   new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );
 
@@ -31,7 +38,7 @@ export const baseUriOf = (contract: string): Promise<string> => {
 }
 
 function contractify(address: string, type = CollectionType.ERC721): Contract {
-  return contract.attach(address);
+  return eitherOr(type, contract.attach(address), multiContract.attach(address));
 }
 
 export function eitherOr<T>(type = CollectionType.ERC721, one: T, two: T): T {
