@@ -10,7 +10,7 @@ import { ContractsMap } from '../processable'
 import { created, plsBe, real, remintable } from './utils/consolidator'
 import { EMPTY_ADDRESS } from './utils/constants'
 import { create, get, getOrCreate } from './utils/entity'
-import { decode1155SingleTransfer, decode721Transfer, RealTransferEvent, whatIsThisTransfer } from './utils/evm'
+import { decode1155MultiTransfer, decode1155SingleTransfer, decode721Transfer, RealTransferEvent, whatIsThisTransfer } from './utils/evm'
 import { createFungibleTokenId, createTokenId, unwrap } from './utils/extract'
 import {
   getBurnTokenEvent, getCreateCollectionEvent,
@@ -252,9 +252,6 @@ export async function handleTokenBurn(context: Context): Promise<void> {
   await createEvent(entity, Interaction.CONSUME, event, meta, context.store)
 }
 
-// async function markOfferExpired(collectionId: string, sn: string, blockNumber: bigint, store: Store): Promise<void> {
-// }
-
 async function createEvent(
   final: NE,
   interaction: Interaction,
@@ -303,6 +300,11 @@ export async function mainFrame(ctx: Context): Promise<void> {
 export function singleMainFrame(ctx: Context): Promise<void> {
   const transfer = decode1155SingleTransfer(ctx)
   return technoBunker(ctx, transfer, CollectionType.ERC1155)
+}
+
+export function mutliMainFrame(ctx: Context): Promise<void> {
+  const transfer = decode1155MultiTransfer(ctx)
+  return technoBunker(ctx, transfer, CollectionType.ERC1155) // multi true
 }
 
 async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = CollectionType.ERC721) {
