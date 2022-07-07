@@ -39,7 +39,7 @@ export function decode1155SingleTransfer(event: Context): erc1155.TransferSingle
   return erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].decode(event)
 }
 
-export function decode1155MutliTransfer(event: Context): erc1155.TransferBatch0Event {
+export function decode1155MultiTransfer(event: Context): erc1155.TransferBatch0Event {
   return erc1155.events["TransferBatch(address,address,address,uint256[],uint256[])"].decode(event)
 }
 
