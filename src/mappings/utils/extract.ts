@@ -1,5 +1,6 @@
 
 import { BaseCall, CallWith, Context, UnwrapFunc } from './types'
+import { BigNumber } from 'ethers'
 
 function toBaseEvent(event: Context): BaseCall {
   const caller = event.substrate.extrinsic?.signer.toString() || ''; 
@@ -24,3 +25,27 @@ export const createTokenId = (collection: string, id: string) => `${collection}-
 
 export const createFungibleTokenId = (collection: string, id: string, caller: string) => `${createTokenId(collection, id)}-${caller}`
 
+export const matcher = (
+  ids: string[],
+  counts: number[]
+): [string, number][] => {
+  const map: Record<string, number> = {};
+  ids.forEach((val, index) => {
+    if (!map[val]) {
+      map[val] = counts[index];
+    } else {
+      map[val] += counts[index];
+    }
+  });
+
+  return Object.entries(map);
+};
+
+
+export function stringOf(bn: BigNumber): string {
+  return bn.toString();
+}
+
+export function numberOf(bn: BigNumber): number {
+  return bn.toNumber();
+}
