@@ -14,7 +14,7 @@ import { decode1155MultiTransfer, decode1155SingleTransfer, decode721Transfer, R
 import { createFungibleTokenId, createTokenId, unwrap } from './utils/extract'
 import {
   getBurnTokenEvent, getCreateCollectionEvent,
-  getCreateTokenEvent, getSingleBurnTokenEvent, getSingleCreateTokenEvent, getSingleTransferTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
+  getCreateTokenEvent, getMultiCreateTokenEvent, getSingleBurnTokenEvent, getSingleCreateTokenEvent, getSingleTransferTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
 } from './utils/getters'
 import { isEmpty } from './utils/helper'
 import logger, { logError, metaLog } from './utils/logger'
@@ -172,6 +172,57 @@ export async function handleSingleTokenCreate(context: Context, fromTransfer: bo
   
   await context.store.save(final)
   await createEvent(final, Interaction.MINTNFT, event, '', context.store)
+}
+
+
+export async function handleMultiTokenCreate(context: Context, fromTransfer: boolean = false): Promise<void> {
+  if (!fromTransfer) {
+    logger.pending(`[Single NFT++]: ${context.substrate.block.height}`)
+  }
+  const event = unwrap(context, getMultiCreateTokenEvent)
+  metaLog('Fungible', event)
+  const collection = ensure<CE>(
+    await get<CE>(context.store, CE, event.collectionId)
+  )
+
+  plsBe(real, collection)
+
+  for (const index in event.snList) {
+    const id = createFungibleTokenId(event.collectionId, event.snList[index], event.caller)
+    const final = await getOrCreate<NE>(context.store, NE, id, {})
+    if (created(final)) {
+      final.id = id
+      final.hash = md5(id)
+      final.issuer = event.caller
+      final.currentOwner = event.caller
+      final.blockNumber = BigInt(event.blockNumber)
+      final.collection = collection
+      final.sn = event.snList[index]
+      final.price = BigInt(0);
+      final.metadata = await (event.metadata[index])
+      final.burned = false
+      final.createdAt = event.timestamp
+      final.updatedAt = event.timestamp
+      final.count = event.countList[index]
+    
+      logger.debug(`metadata: ${final.metadata}`)
+    
+      if (final.metadata) {
+        const metadata = await handleMetadata(final.metadata, context.store)
+        final.meta = metadata
+        final.name = metadata?.name
+      }
+      logger.success(`[MINT] ${final.id}`)
+    } else {
+      final.count += event.countList[index]
+      final.burned = false
+      logger.success(`[TRANSFER] Add ${event.countList[index]} tokens to ${event.caller}`)
+    }
+  
+    
+    await context.store.save(final)
+    await createEvent(final, Interaction.MINTNFT, event, '', context.store)
+  }
 }
 
 export async function handleSingleTokenTransfer(context: Context): Promise<void> {
