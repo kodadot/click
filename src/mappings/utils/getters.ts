@@ -32,8 +32,8 @@ export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
 export function getSingleCreateTokenEvent(ctx: Context): CreateTokenEvent {
   const { to, id: tokenId, value } = decode1155SingleTransfer(ctx)
   const collectionId = contractOf(ctx)
-  const metadata = uriOf(collectionId, tokenId.toString())
-  // const metadata = Promise.resolve('')
+  // const metadata = uriOf(collectionId, tokenId.toString())
+  const metadata = Promise.resolve('')
 
   return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: value.toNumber() }
 }
@@ -47,7 +47,8 @@ export function getMultiCreateTokenEvent(
   const matches = mapAndMatch(ids, values)
   const snList = Object.keys(matches)
 
-  const metadata = snList.map((tokenId) => uriOf(collectionId, tokenId))
+  // const metadata = snList.map((tokenId) => uriOf(collectionId, tokenId))
+  const metadata = snList.map(() => Promise.resolve(''))
 
   return {
     collectionId,
