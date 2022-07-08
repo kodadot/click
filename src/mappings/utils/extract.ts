@@ -31,6 +31,9 @@ export const matcher = (
 ): Record<string, number> => {
   const map: Record<string, number> = {};
   ids.forEach((val, index) => {
+    if (counts[index] === 0) {
+      return;
+    }
     if (!map[val]) {
       map[val] = counts[index];
     } else {
