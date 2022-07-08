@@ -50,9 +50,8 @@ export interface IEvent<T = OneOfInteraction> {
   meta: string;
 }
 
-export type BaseCollectionEvent = {
+export type BaseCollectionEvent = WithCaller & {
   id: string;
-  caller: string;
 }
 
 export type BaseTokenEvent = {
@@ -68,13 +67,16 @@ export type CreateCollectionEvent = BaseCollectionEvent & OptionalMeta & {
   type: string;
 }
 
-export type CreateTokenEvent = BaseTokenEvent & WithCount & {
-  caller: string;
+export type CreateTokenEvent = BaseTokenEvent & WithCount &  WithCaller & {
   metadata: Promise<string>;
 }
 
 export type TransferTokenEvent = BaseTokenEvent & WithCaller & {
   to: string;
+}
+
+export type AsBatch<T> = {
+  batch: T[];
 }
 
 export type TransferSingleTokenEvent = TransferTokenEvent & WithCount
