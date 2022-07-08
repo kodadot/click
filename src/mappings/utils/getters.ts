@@ -1,7 +1,8 @@
 import { tokenUriOf, uriOf } from '../../contract'
 import { decode1155SingleTransfer, decode1155UriChange, decode721Transfer, decode1155MultiTransfer } from './evm'
-import { contractOf, matcher, stringOf, numberOf } from './extract'
+import { contractOf, matcher, stringOf, numberOf, mapAndMatch } from './extract'
 import {
+  BurnMultiTokenEvent,
   BurnSingleTokenEvent,
   BurnTokenEvent,
   ChangeMetadataEvent,
@@ -9,6 +10,7 @@ import {
   CreateCollectionEvent,
   CreateMultiTokenEvent,
   CreateTokenEvent,
+  TransferMultiTokenEvent,
   TransferSingleTokenEvent,
   TransferTokenEvent,
 } from './types'
@@ -41,10 +43,8 @@ export function getMultiCreateTokenEvent(
 ): CreateMultiTokenEvent {
   const { to, ids, values } = decode1155MultiTransfer(ctx)
   const collectionId = contractOf(ctx)
-  const tokenIdList = ids.map(stringOf)
-  const counts = values.map(numberOf)
 
-  const matches = matcher(tokenIdList, counts)
+  const matches = mapAndMatch(ids, values)
   const snList = Object.keys(matches)
 
   const metadata = snList.map((tokenId) => uriOf(collectionId, tokenId))
@@ -82,10 +82,24 @@ export function getSingleTransferTokenEvent(ctx: Context): TransferSingleTokenEv
   return { collectionId, caller: from, sn: id.toString(), to, count: value.toNumber() }
 }
 
+export function getMultiTransferTokenEvent(ctx: Context): TransferMultiTokenEvent {
+  const { from, to, ids, values } = decode1155MultiTransfer(ctx)
+  const collectionId = contractOf(ctx)
+  const matches = mapAndMatch(ids, values)
+  return { collectionId, caller: from, snList: Object.keys(matches), to, countList: Object.values(matches) }
+}
+
 export function getSingleBurnTokenEvent(ctx: Context): BurnSingleTokenEvent {
   const { from, id, value } = decode1155SingleTransfer(ctx)
   const collectionId = contractOf(ctx)
   return { collectionId, caller: from, sn: id.toString(), count: value.toNumber() }
+}
+
+export function getMultiBurnTokenEvent(ctx: Context): BurnMultiTokenEvent {
+  const { from, ids, values } = decode1155MultiTransfer(ctx)
+  const collectionId = contractOf(ctx)
+  const matches = mapAndMatch(ids, values)
+  return { collectionId, caller: from, snList: Object.keys(matches), countList: Object.values(matches) }
 }
 
 // export function getMultiTransferTokenEvent(ctx: Context): TransferSingleTokenEvent[] {
