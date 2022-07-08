@@ -2,12 +2,12 @@ import { tokenUriOf, uriOf } from '../../contract'
 import { decode1155SingleTransfer, decode1155UriChange, decode721Transfer, decode1155MultiTransfer } from './evm'
 import { contractOf, matcher, stringOf, numberOf } from './extract'
 import {
-  AsBatch,
   BurnSingleTokenEvent,
   BurnTokenEvent,
   ChangeMetadataEvent,
   Context,
   CreateCollectionEvent,
+  CreateMultiTokenEvent,
   CreateTokenEvent,
   TransferSingleTokenEvent,
   TransferTokenEvent,
@@ -38,24 +38,23 @@ export function getSingleCreateTokenEvent(ctx: Context): CreateTokenEvent {
 
 export function getMultiCreateTokenEvent(
   ctx: Context
-): AsBatch<CreateTokenEvent> {
+): CreateMultiTokenEvent {
   const { to, ids, values } = decode1155MultiTransfer(ctx)
   const collectionId = contractOf(ctx)
   const tokenIdList = ids.map(stringOf)
   const counts = values.map(numberOf)
 
   const matches = matcher(tokenIdList, counts)
+  const snList = Object.keys(matches)
 
-  const metadata = matches.map(([tokenId]) => uriOf(collectionId, tokenId))
+  const metadata = snList.map((tokenId) => uriOf(collectionId, tokenId))
 
   return {
-    batch: matches.map(([tokenId, count], index) => ({
-      collectionId,
-      caller: to,
-      sn: tokenId,
-      metadata: metadata[index],
-      count,
-    })),
+    collectionId,
+    caller: to,
+    snList,
+    countList: Object.values(matches),
+    metadata,
   }
 }
 
