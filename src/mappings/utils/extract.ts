@@ -25,6 +25,14 @@ export const createTokenId = (collection: string, id: string) => `${collection}-
 
 export const createFungibleTokenId = (collection: string, id: string, caller: string) => `${createTokenId(collection, id)}-${caller}`
 
+
+export const mapAndMatch = (ids: BigNumber[], values: BigNumber[]): Record<string, number> => {
+  const tokenIdList = ids.map(stringOf)
+  const counts = values.map(numberOf)
+
+  return matcher(tokenIdList, counts)
+}
+
 export const matcher = (
   ids: string[],
   counts: number[]
