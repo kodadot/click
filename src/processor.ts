@@ -1,10 +1,15 @@
 import { lookupArchive } from "@subsquid/archive-registry"
 import {
+  EvmLogHandlerContext,
   SubstrateEvmProcessor
 } from "@subsquid/substrate-evm-processor"
 import { CHAIN_NODE } from "./contract"
 import * as mappings from './mappings'
-import { singleTransferFilter } from './mappings/utils/evm'
+import { decode1155MultiTransfer, multiTransferFilter, singleTransferFilter, transferFilter } from './mappings/utils/evm'
+import { unwrap } from './mappings/utils/extract'
+import { getMultiCreateTokenEvent } from './mappings/utils/getters'
+import logger from './mappings/utils/logger'
+import { serializer } from './mappings/utils/serializer'
 import { Contracts } from './processable'
 
 const processor = new SubstrateEvmProcessor("moonriver-substrate");
@@ -35,24 +40,26 @@ processor.addEvmLogHandler(Contracts.Moonx, singleTransferFilter, mappings.singl
 // processor.addEvmLogHandler(Contracts.Box, singleTransferFilter, mappings.singleMainFrame);
 // processor.addEvmLogHandler(Contracts.Embassy, singleTransferFilter, mappings.singleMainFrame);
 
+
+processor.addEvmLogHandler(Contracts.Moonx, multiTransferFilter, mappings.mutliMainFrame);
+// processor.addEvmLogHandler(Contracts.Factory, multiTransferFilter, mappings.mutliMainFrame);
+// processor.addEvmLogHandler(Contracts.Art, multiTransferFilter, mappings.mutliMainFrame);
+// processor.addEvmLogHandler(Contracts.Box, multiTransferFilter, mappings.mutliMainFrame);
+// processor.addEvmLogHandler(Contracts.Embassy, multiTransferFilter, mappings.mutliMainFrame);
+
 // processor.addEvmLogHandler(
 //   Contracts.Moonx,
-//   {
-//     filter: [erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].topic],
-//   },
-//   mappings.singleMainFrame
+//   multiTransferFilter,
+//   contractLogsHandler
 // );
 
 // export async function contractLogsHandler(
 //   ctx: EvmLogHandlerContext
 // ): Promise<void> {
-//   const transfer = decode721Transfer(ctx)
+//   const data = unwrap(ctx, getMultiCreateTokenEvent)
 
-//   const data = unwrap(ctx, () => {})
-
-//   logger.debug(`Transfer: ${JSON.stringify(transfer)}`)
+//   logger.debug(`Transfer: ${JSON.stringify(data, serializer, 2)}`)
 //   logger.debug(`contractAddress: ${ctx.contractAddress}`)
-//   metaLog('BASE', data)
 // }
 
 processor.run();
