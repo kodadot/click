@@ -50,6 +50,8 @@ export interface IEvent<T = OneOfInteraction> {
   meta: string;
 }
 
+// BASE 
+
 export type BaseCollectionEvent = WithCaller & {
   id: string;
 }
@@ -72,20 +74,26 @@ export type CreateTokenEvent = BaseTokenEvent & WithCount &  WithCaller & {
 
 export type TransferTokenEvent = BaseTokenEvent & WithCaller & TransferTo
 
-export type AsBatch<T> = {
-  batch: T[];
-}
+export type BurnTokenEvent = BaseTokenEvent & WithCaller
+
+// 1155 Single
 
 export type TransferSingleTokenEvent = TransferTokenEvent & WithCount
 
-export type TransferMultiTokenEvent = CollectionId & WithCaller & TransferTo & {
+export type BurnSingleTokenEvent = BurnTokenEvent & WithCount
+
+// 1155 Multi
+
+export type CreateMultiTokenEvent = CollectionId & WithCaller & TransferBatchList & {
+  metadata: Promise<string>[];
+}
+
+export type TransferMultiTokenEvent = CollectionId & WithCaller & TransferTo & TransferBatchList
+
+type TransferBatchList = {
   snList: string[];
   countList: number[];
 }
-
-export type BurnTokenEvent = BaseTokenEvent & WithCaller
-
-export type BurnSingleTokenEvent = BurnTokenEvent & WithCount
 
 export type ChangeMetadataEvent = BaseTokenEvent & OptionalMeta
 
