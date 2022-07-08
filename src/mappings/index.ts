@@ -14,7 +14,7 @@ import { decode1155MultiTransfer, decode1155SingleTransfer, decode721Transfer, R
 import { createFungibleTokenId, createTokenId, unwrap } from './utils/extract'
 import {
   getBurnTokenEvent, getCreateCollectionEvent,
-  getCreateTokenEvent, getMultiCreateTokenEvent, getSingleBurnTokenEvent, getSingleCreateTokenEvent, getSingleTransferTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
+  getCreateTokenEvent, getMultiBurnTokenEvent, getMultiCreateTokenEvent, getMultiTransferTokenEvent, getSingleBurnTokenEvent, getSingleCreateTokenEvent, getSingleTransferTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
 } from './utils/getters'
 import { isEmpty } from './utils/helper'
 import logger, { logError, metaLog } from './utils/logger'
@@ -174,7 +174,6 @@ export async function handleSingleTokenCreate(context: Context, fromTransfer: bo
   await createEvent(final, Interaction.MINTNFT, event, '', context.store)
 }
 
-
 export async function handleMultiTokenCreate(context: Context, fromTransfer: boolean = false): Promise<void> {
   if (!fromTransfer) {
     logger.pending(`[Single NFT++]: ${context.substrate.block.height}`)
@@ -242,6 +241,19 @@ export async function handleSingleTokenTransfer(context: Context): Promise<void>
   )
 }
 
+export async function handleMultiTokenTransfer(context: Context): Promise<void> {
+  logger.pending(`[SEND]: ${context.substrate.block.height}`)
+  const event = unwrap(context, getMultiTransferTokenEvent)
+
+  logger.debug(`[SEND]: DO BURN`)
+  await handleMultiTokenBurn(context, true)
+  logger.debug(`[SEND]: DO CREATE`)
+  await handleMultiTokenCreate(context, true)
+  logger.success(
+    `[SEND] from ${event.caller} to ${event.to}`
+  )
+}
+
 export async function handleSingleTokenBurn(context: Context, fromTransfer: boolean = false): Promise<void> {
   if (!fromTransfer) {
     logger.pending(`[BURN]: ${context.substrate.block.height}`)
@@ -267,6 +279,36 @@ export async function handleSingleTokenBurn(context: Context, fromTransfer: bool
   await context.store.save(entity)
   const meta = String(event.count)
   await createEvent(entity, Interaction.CONSUME, event, meta, context.store)
+}
+
+export async function handleMultiTokenBurn(context: Context, fromTransfer: boolean = false): Promise<void> {
+  if (!fromTransfer) {
+    logger.pending(`[BURN]: ${context.substrate.block.height}`)
+  }
+  const event = unwrap(context, getMultiBurnTokenEvent)
+  logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
+
+  for (const index in event.snList) {
+    const id = createFungibleTokenId(event.collectionId, event.snList[index], event.caller)
+    const entity = ensure<NE>(await get(context.store, NE, id))
+    plsBe(real, entity)
+
+    entity.count -= event.countList[index]
+
+    if (entity.count === 0) {
+      entity.burned = true
+    }
+
+    if (!fromTransfer) {
+      logger.success(`[BURN] ${id} by ${event.caller}`)
+    } else {
+      logger.success(`[TRANSFER] Substract ${event.countList[index]} tokens from ${event.caller}`)
+    }
+    
+    await context.store.save(entity)
+    const meta = String(event.countList[index])
+    await createEvent(entity, Interaction.CONSUME, event, meta, context.store)
+  }
 }
 
 export async function handleTokenTransfer(context: Context): Promise<void> {
