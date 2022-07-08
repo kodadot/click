@@ -54,8 +54,7 @@ export type BaseCollectionEvent = WithCaller & {
   id: string;
 }
 
-export type BaseTokenEvent = {
-  collectionId: string;
+export type BaseTokenEvent = CollectionId & {
   sn: string;
 }
 
@@ -71,9 +70,7 @@ export type CreateTokenEvent = BaseTokenEvent & WithCount &  WithCaller & {
   metadata: Promise<string>;
 }
 
-export type TransferTokenEvent = BaseTokenEvent & WithCaller & {
-  to: string;
-}
+export type TransferTokenEvent = BaseTokenEvent & WithCaller & TransferTo
 
 export type AsBatch<T> = {
   batch: T[];
@@ -81,38 +78,26 @@ export type AsBatch<T> = {
 
 export type TransferSingleTokenEvent = TransferTokenEvent & WithCount
 
-export type CreateMultiTokenEvent = AsMultiTokenEvent & {
-  metadataList: Promise<string>[]
-}
-
-export type TransferMultiTokenEvent = AsMultiTokenEvent & {
-  to: string
-}
-
-export type AsMultiTokenEvent = WithCaller & {
-  collectionId: string;
-  tokenIdList: string[];
-  counts: number[];
-}
-
-export type ListTokenEvent = BaseTokenEvent & {
-  caller: string;
-  price?: bigint
-}
-
-export type BuyTokenEvent = ListTokenEvent & {
-  currentOwner: string;
+export type TransferMultiTokenEvent = CollectionId & WithCaller & TransferTo & {
+  snList: string[];
+  countList: number[];
 }
 
 export type BurnTokenEvent = BaseTokenEvent & WithCaller
 
 export type BurnSingleTokenEvent = BurnTokenEvent & WithCount
 
-export type DestroyCollectionEvent = BaseCollectionEvent
-
 export type ChangeMetadataEvent = BaseTokenEvent & OptionalMeta
 
 export type CallWith<T> = BaseCall & T
+
+type TransferTo = {
+  to: string;
+}
+
+type CollectionId = {
+  collectionId: string;
+}
 
 export type EntityConstructor<T> = {
   new (...args: any[]): T;

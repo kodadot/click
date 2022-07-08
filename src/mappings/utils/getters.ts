@@ -8,7 +8,6 @@ import {
   ChangeMetadataEvent,
   Context,
   CreateCollectionEvent,
-  CreateMultiTokenEvent,
   CreateTokenEvent,
   TransferSingleTokenEvent,
   TransferTokenEvent,
