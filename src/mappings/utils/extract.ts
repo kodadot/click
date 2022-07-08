@@ -28,7 +28,7 @@ export const createFungibleTokenId = (collection: string, id: string, caller: st
 export const matcher = (
   ids: string[],
   counts: number[]
-): [string, number][] => {
+): Record<string, number> => {
   const map: Record<string, number> = {};
   ids.forEach((val, index) => {
     if (!map[val]) {
@@ -38,7 +38,7 @@ export const matcher = (
     }
   });
 
-  return Object.entries(map);
+  return map;
 };
 
 
