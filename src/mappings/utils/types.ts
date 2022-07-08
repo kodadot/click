@@ -84,11 +84,15 @@ export type BurnSingleTokenEvent = BurnTokenEvent & WithCount
 
 // 1155 Multi
 
-export type CreateMultiTokenEvent = CollectionId & WithCaller & TransferBatchList & {
+type BaseMultiTokenEvent = CollectionId & WithCaller & TransferBatchList
+
+export type CreateMultiTokenEvent = BaseMultiTokenEvent & {
   metadata: Promise<string>[];
 }
 
-export type TransferMultiTokenEvent = CollectionId & WithCaller & TransferTo & TransferBatchList
+export type TransferMultiTokenEvent = BaseMultiTokenEvent & TransferTo
+
+export type BurnMultiTokenEvent = BaseMultiTokenEvent
 
 type TransferBatchList = {
   snList: string[];
