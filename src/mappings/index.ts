@@ -395,9 +395,24 @@ export function singleMainFrame(ctx: Context): Promise<void> {
   return technoBunker(ctx, transfer, CollectionType.ERC1155)
 }
 
-export function mutliMainFrame(ctx: Context): Promise<void> {
+export async function mutliMainFrame(ctx: Context): Promise<void> {
   const transfer = decode1155MultiTransfer(ctx)
-  return technoBunker(ctx, transfer, CollectionType.ERC1155) // multi true
+  switch (whatIsThisTransfer(transfer)) {
+    case Interaction.MINTNFT:
+      metaLog(Interaction.MINTNFT, transfer)
+      await handleMultiTokenCreate(ctx)
+      break
+    case Interaction.SEND:
+      metaLog(Interaction.SEND, transfer)
+      await handleMultiTokenTransfer(ctx)
+      break
+    case Interaction.CONSUME:
+      metaLog(Interaction.CONSUME, transfer)
+      await handleMultiTokenBurn(ctx)
+      break
+    default:
+      logger.warn(`Unknown transfer: ${JSON.stringify(transfer, null, 2)}`)
+  }
 }
 
 async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = CollectionType.ERC721) {
