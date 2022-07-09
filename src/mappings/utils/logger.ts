@@ -1,4 +1,5 @@
 import singale from 'signale'
+import { RealTransferEvent } from './evm'
 import { serializer } from './serializer'
 
 type ErrorCallback = (error: Error) => void
@@ -16,5 +17,7 @@ export const metaLog = (
   singale.debug(
     `[[${interaction}]]: ${JSON.stringify(everythingElse, serializer, 2)}`
   )
+
+export const transferDebug = (interaction: string, transfer: RealTransferEvent) => singale.debug(`[[${interaction}]]: [${transfer.from}, ${transfer.to}, ${(transfer as any).tokenId || (transfer as any).id}, ${(transfer as any).value || 1}]`)
 
 export default singale
