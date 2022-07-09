@@ -1,8 +1,10 @@
 import { EMPTY_ADDRESS } from './constants'
 import * as erc721 from '../../abi/erc721'
 import * as erc1155 from '../../abi/erc1155'
+import * as blvck from '../../abi/blvck'
 import { Context, Interaction } from './types'
 import { EvmLogHandlerOptions } from '@subsquid/substrate-evm-processor'
+import { Contracts } from '../../processable'
 
 export type RealTransferEvent = erc721.TransferAddressAddressUint256Event | erc1155.TransferSingle0Event | erc1155.TransferBatch0Event
 
@@ -14,6 +16,8 @@ export const isMint = (addrOne: string, addrTwo: string) => {
 export const isBurn = (addrOne: string, addrTwo: string) => {
   return addrTwo === EMPTY_ADDRESS && addrOne !== EMPTY_ADDRESS
 }
+
+const isBlvck = ({ contractAddress: address }: Context) => address === Contracts.Blvck
 
 export const isTransfer = (addrOne: string, addrTwo: string) => {
   return !(isMint(addrOne, addrTwo) || isBurn(addrOne, addrTwo))
@@ -32,6 +36,9 @@ export const whatIsThisTransfer = (transfer: RealTransferEvent): Interaction => 
 }
 
 export function decode721Transfer(event: Context): erc721.TransferAddressAddressUint256Event {
+  if (isBlvck(event)) {
+    return decodeBlvckTransfer(event)
+  }
   return erc721.events["Transfer(address,address,uint256)"].decode(event)
 }
 
@@ -61,4 +68,13 @@ export const multiTransferFilter: EvmLogHandlerOptions = {
 
 export const uriChangeFilter: EvmLogHandlerOptions = {
   filter: [erc1155.events["URI(string,uint256)"].topic],
+}
+
+function decodeBlvckTransfer(event: Context): erc721.TransferAddressAddressUint256Event {
+  const { _from: from, _to: to, _tokenId: tokenId } = blvck.events["Transfer(address,address,uint256)"].decode(event)
+  return {
+    from,
+    to,
+    tokenId,
+  }
 }
