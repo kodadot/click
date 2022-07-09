@@ -371,15 +371,17 @@ async function createEvent(
 
 
 export async function forceCreateContract(ctx: BlockHandlerContext) {
-  const contracts = Object.entries(ContractsMap).map(([id, contract]) => {
-    metaLog('Building CONTRACT', { id, name: contract.name })
+  const meta = await Promise.all(Object.values(ContractsMap).map(({ metadata }) => metadata).map(m => handleMetadata(m, ctx.store)))
+  const contracts = Object.entries(ContractsMap).map(([id, contract], index) => {
+    logger.pending(`Building`, id, contract.name)
     return new CE({
       id,
-      ...contract
+      ...contract,
+      meta: meta[index]
     })
   })
 
-  metaLog('CONTRACT DONE', { count: contracts.length })
+  logger.complete('[FORCE] CONTRACTS', contracts.length)
   
   await ctx.store.save(contracts);
 }
