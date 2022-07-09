@@ -1,15 +1,6 @@
 
 import { BaseCall, CallWith, Context, UnwrapFunc } from './types'
-
-
-// function toBaseCall(extrinsic: ExtrinsicHandlerContext): BaseCall {
-//   const caller = extrinsic.extrinsic.signer.toString();
-//   const blockNumber = extrinsic.block.height.toString();
-//   const timestamp = new Date(extrinsic.block.timestamp);
-
-//   return { caller, blockNumber, timestamp };
-// }
-
+import { BigNumber } from 'ethers'
 
 function toBaseEvent(event: Context): BaseCall {
   const caller = event.substrate.extrinsic?.signer.toString() || ''; 
@@ -32,3 +23,40 @@ export function unwrap<T>(ctx: Context, unwrapFn: UnwrapFunc<T>): CallWith<T> {
 
 export const createTokenId = (collection: string, id: string) => `${collection}-${id}`
 
+export const createFungibleTokenId = (collection: string, id: string, caller: string) => `${createTokenId(collection, id)}-${caller}`
+
+
+export const mapAndMatch = (ids: BigNumber[], values: BigNumber[]): Record<string, number> => {
+  const tokenIdList = ids.map(stringOf)
+  const counts = values.map(numberOf)
+
+  return matcher(tokenIdList, counts)
+}
+
+export const matcher = (
+  ids: string[],
+  counts: number[]
+): Record<string, number> => {
+  const map: Record<string, number> = {};
+  ids.forEach((val, index) => {
+    if (counts[index] === 0) {
+      return;
+    }
+    if (!map[val]) {
+      map[val] = counts[index];
+    } else {
+      map[val] += counts[index];
+    }
+  });
+
+  return map;
+};
+
+
+export function stringOf(bn: BigNumber): string {
+  return bn.toString();
+}
+
+export function numberOf(bn: BigNumber): number {
+  return bn.toNumber();
+}

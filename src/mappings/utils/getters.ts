@@ -1,15 +1,18 @@
 import { tokenUriOf, uriOf } from '../../contract'
-import { decode1155MutliTransfer, decode1155SingleTransfer, decode1155UriChange, decode721Transfer } from './evm'
-import { contractOf } from './extract'
+import { decode1155SingleTransfer, decode1155UriChange, decode721Transfer, decode1155MultiTransfer } from './evm'
+import { contractOf, matcher, stringOf, numberOf, mapAndMatch } from './extract'
 import {
+  BurnMultiTokenEvent,
+  BurnSingleTokenEvent,
   BurnTokenEvent,
   ChangeMetadataEvent,
   Context,
   CreateCollectionEvent,
+  CreateMultiTokenEvent,
   CreateTokenEvent,
+  TransferMultiTokenEvent,
   TransferSingleTokenEvent,
   TransferTokenEvent,
-  WithCount
 } from './types'
 
 export function getCreateCollectionEvent(ctx: Context): CreateCollectionEvent {
@@ -20,7 +23,8 @@ export function getCreateCollectionEvent(ctx: Context): CreateCollectionEvent {
 export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
   const { to, tokenId } = decode721Transfer(ctx)
   const collectionId = contractOf(ctx)
-  const metadata = tokenUriOf(collectionId, tokenId.toString())
+  // const metadata = tokenUriOf(collectionId, tokenId.toString())
+  const metadata = Promise.resolve('')
 
   return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: 1 }
 }
@@ -28,9 +32,31 @@ export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
 export function getSingleCreateTokenEvent(ctx: Context): CreateTokenEvent {
   const { to, id: tokenId, value } = decode1155SingleTransfer(ctx)
   const collectionId = contractOf(ctx)
-  const metadata = uriOf(collectionId, tokenId.toString())
+  // const metadata = uriOf(collectionId, tokenId.toString())
+  const metadata = Promise.resolve('')
 
   return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: value.toNumber() }
+}
+
+export function getMultiCreateTokenEvent(
+  ctx: Context
+): CreateMultiTokenEvent {
+  const { to, ids, values } = decode1155MultiTransfer(ctx)
+  const collectionId = contractOf(ctx)
+
+  const matches = mapAndMatch(ids, values)
+  const snList = Object.keys(matches)
+
+  // const metadata = snList.map((tokenId) => uriOf(collectionId, tokenId))
+  const metadata = snList.map(() => Promise.resolve(''))
+
+  return {
+    collectionId,
+    caller: to,
+    snList,
+    countList: Object.values(matches),
+    metadata,
+  }
 }
 
 export function getTransferTokenEvent(ctx: Context): TransferTokenEvent {
@@ -55,6 +81,26 @@ export function getSingleTransferTokenEvent(ctx: Context): TransferSingleTokenEv
   const { from, to, id, value } = decode1155SingleTransfer(ctx)
   const collectionId = contractOf(ctx)
   return { collectionId, caller: from, sn: id.toString(), to, count: value.toNumber() }
+}
+
+export function getMultiTransferTokenEvent(ctx: Context): TransferMultiTokenEvent {
+  const { from, to, ids, values } = decode1155MultiTransfer(ctx)
+  const collectionId = contractOf(ctx)
+  const matches = mapAndMatch(ids, values)
+  return { collectionId, caller: from, snList: Object.keys(matches), to, countList: Object.values(matches) }
+}
+
+export function getSingleBurnTokenEvent(ctx: Context): BurnSingleTokenEvent {
+  const { from, id, value } = decode1155SingleTransfer(ctx)
+  const collectionId = contractOf(ctx)
+  return { collectionId, caller: from, sn: id.toString(), count: value.toNumber() }
+}
+
+export function getMultiBurnTokenEvent(ctx: Context): BurnMultiTokenEvent {
+  const { from, ids, values } = decode1155MultiTransfer(ctx)
+  const collectionId = contractOf(ctx)
+  const matches = mapAndMatch(ids, values)
+  return { collectionId, caller: from, snList: Object.keys(matches), countList: Object.values(matches) }
 }
 
 // export function getMultiTransferTokenEvent(ctx: Context): TransferSingleTokenEvent[] {

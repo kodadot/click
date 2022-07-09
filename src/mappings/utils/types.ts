@@ -1,10 +1,9 @@
-import { Interaction } from '../../model/generated/_interaction'
-import { Attribute } from '../../model/generated/_attribute'
-import { EventHandlerContext } from '@subsquid/substrate-processor'
-import { nanoid } from 'nanoid'
-import { createTokenId } from './extract'
 import { EvmLogHandlerContext } from '@subsquid/substrate-evm-processor'
 import md5 from 'md5'
+import { nanoid } from 'nanoid'
+import { Attribute } from '../../model/generated/_attribute'
+import { Interaction } from '../../model/generated/_interaction'
+import { createTokenId } from './extract'
 
 export type BaseCall = {
   caller: string;
@@ -51,13 +50,13 @@ export interface IEvent<T = OneOfInteraction> {
   meta: string;
 }
 
-export type BaseCollectionEvent = {
+// BASE 
+
+export type BaseCollectionEvent = WithCaller & {
   id: string;
-  caller: string;
 }
 
-export type BaseTokenEvent = {
-  collectionId: string;
+export type BaseTokenEvent = CollectionId & {
   sn: string;
 }
 
@@ -69,41 +68,48 @@ export type CreateCollectionEvent = BaseCollectionEvent & OptionalMeta & {
   type: string;
 }
 
-export type CreateTokenEvent = BaseTokenEvent & WithCount & {
-  caller: string;
+export type CreateTokenEvent = BaseTokenEvent & WithCount &  WithCaller & {
   metadata: Promise<string>;
 }
 
-export type TransferTokenEvent = BaseTokenEvent & WithCaller & {
-  to: string;
-}
+export type TransferTokenEvent = BaseTokenEvent & WithCaller & TransferTo
+
+export type BurnTokenEvent = BaseTokenEvent & WithCaller
+
+// 1155 Single
 
 export type TransferSingleTokenEvent = TransferTokenEvent & WithCount
 
-export type TransferMultiTokenEvent = WithCaller & {
-  sns: string[];
-  counts: number[];
-  to: string;
+export type BurnSingleTokenEvent = BurnTokenEvent & WithCount
+
+// 1155 Multi
+
+type BaseMultiTokenEvent = CollectionId & WithCaller & TransferBatchList
+
+export type CreateMultiTokenEvent = BaseMultiTokenEvent & {
+  metadata: Promise<string>[];
 }
 
-export type ListTokenEvent = BaseTokenEvent & {
-  caller: string;
-  price?: bigint
-}
+export type TransferMultiTokenEvent = BaseMultiTokenEvent & TransferTo
 
-export type BuyTokenEvent = ListTokenEvent & {
-  currentOwner: string;
-}
+export type BurnMultiTokenEvent = BaseMultiTokenEvent
 
-export type BurnTokenEvent = BaseTokenEvent & {
-  caller: string
+type TransferBatchList = {
+  snList: string[];
+  countList: number[];
 }
-
-export type DestroyCollectionEvent = BaseCollectionEvent
 
 export type ChangeMetadataEvent = BaseTokenEvent & OptionalMeta
 
 export type CallWith<T> = BaseCall & T
+
+type TransferTo = {
+  to: string;
+}
+
+type CollectionId = {
+  collectionId: string;
+}
 
 export type EntityConstructor<T> = {
   new (...args: any[]): T;

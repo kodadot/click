@@ -1,9 +1,9 @@
-import { assertNotNull, Store } from "@subsquid/substrate-evm-processor";
-import { ethers, Contract, ContractInterface } from "ethers";
-import * as erc721 from "./abi/erc721";
-import * as erc1155 from "./abi/erc1155";
-import { CollectionEntity, CollectionType } from "./model";
-import { Contracts, ContractsMap } from "./processable";
+import { assertNotNull, Store } from "@subsquid/substrate-evm-processor"
+import { Contract, ethers } from "ethers"
+import * as erc721 from "./abi/erc721"
+import * as erc1155 from "./abi/erc1155"
+import { CollectionEntity, CollectionType } from "./model"
+import { Contracts, ContractsMap } from "./processable"
  
 export const CHAIN_NODE = "wss://public-rpc.pinknode.io/moonriver"
 export const HTTP_NODE = "https://moonriver.api.onfinality.io/public"
@@ -32,7 +32,7 @@ export const tokenUriOf = (contract: string, tokenId: string): Promise<string> =
 
 export const metadataFromUri = (contract: Contracts | string, tokenId: string): Promise<string> => {
   const { type } = ContractsMap[contract as Contracts];
-  return type === CollectionType.ERC721 ? tokenUriOf(contract, tokenId) : uriOf(contract, tokenId);
+  return isERC721(type) ? tokenUriOf(contract, tokenId) : uriOf(contract, tokenId);
 }
 
 export const uriOf = (contract: string, tokenId: string): Promise<string> => {
@@ -44,16 +44,15 @@ export const baseUriOf = (contract: string): Promise<string> => {
 }
 
 function contractify(address: string, type = CollectionType.ERC721): Contract {
-  return contract.attach(address);
-  // return new ethers.Contract(
-  //   address,
-  //   eitherOr(type, erc721.abi, erc1155.abi),
-  //   new ethers.providers.WebSocketProvider(CHAIN_NODE)
-  // );
+  return eitherOr(type, contract.attach(address), multiContract.attach(address));
 }
 
 export function eitherOr<T>(type = CollectionType.ERC721, one: T, two: T): T {
-  return type === CollectionType.ERC721 ? one : two;
+  return isERC721(type) ? one : two;
+}
+
+export function isERC721(type: CollectionType): boolean {
+  return type === CollectionType.ERC721;
 }
 
 export function createContractEntity(): CollectionEntity {
