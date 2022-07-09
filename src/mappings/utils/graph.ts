@@ -57,7 +57,6 @@ const mappers: Record<Contracts, MapFn> = {
 
 export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
   const endpoint = baseUrl[contract as Contracts]
-  logger.pending(endpoint)
   if (!endpoint) {
     return Promise.resolve('')
   }
@@ -67,10 +66,7 @@ export const tokenUriOf = (contract: string, tokenId: string): Promise<string> =
     query,
     variables: { id }
   })
-  // .then(({ data }) => {
-  //   metaLog('METADATA FETCH', data)
-  //   return data
-  // })
+  .then(({ data }) =>  data)
   .then(unwrap)
   .catch(logFail)
 }
