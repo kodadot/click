@@ -23,8 +23,8 @@ export function getCreateCollectionEvent(ctx: Context): CreateCollectionEvent {
 export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
   const { to, tokenId } = decode721Transfer(ctx)
   const collectionId = contractOf(ctx)
-  // const metadata = tokenUriOf(collectionId, tokenId.toString())
-  const metadata = Promise.resolve('')
+  const metadata = tokenUriOf(collectionId, tokenId.toString())
+  // const metadata = Promise.resolve('')
 
   return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: 1 }
 }

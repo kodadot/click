@@ -4,6 +4,7 @@ import * as erc721 from "./abi/erc721"
 import * as erc1155 from "./abi/erc1155"
 import { CollectionEntity, CollectionType } from "./model"
 import { Contracts, ContractsMap } from "./processable"
+import { tokenUriOf as tokenMetaOf } from './mappings/utils/graph'
  
 export const CHAIN_NODE = "wss://public-rpc.pinknode.io/moonriver"
 export const HTTP_NODE = "https://moonriver.api.onfinality.io/public"
@@ -27,7 +28,8 @@ export const multiContract = new ethers.Contract(
 );
 
 export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
-  return contractify(contract).tokenURI(tokenId).catch(() => "");
+  return tokenMetaOf(contract, tokenId);
+  // return contractify(contract).tokenURI(tokenId).catch(() => "");
 }
 
 export const metadataFromUri = (contract: Contracts | string, tokenId: string): Promise<string> => {
