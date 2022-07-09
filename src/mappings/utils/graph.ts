@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import { Contracts } from '../../processable'
-import logger, { metaLog } from './logger'
+import logger from './logger'
 
 
 export const BASE_URL = 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/'
@@ -67,10 +67,10 @@ export const tokenUriOf = (contract: string, tokenId: string): Promise<string> =
     query,
     variables: { id }
   })
-  .then(({ data }) => {
-    metaLog('METADATA FETCH', data)
-    return data
-  })
+  // .then(({ data }) => {
+  //   metaLog('METADATA FETCH', data)
+  //   return data
+  // })
   .then(unwrap)
   .catch(logFail)
 }
