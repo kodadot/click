@@ -1,6 +1,7 @@
 import { tokenUriOf } from '../../contract'
+import { BIGINT_ONE } from './constants'
 import { decode1155MultiTransfer, decode1155SingleTransfer, decode1155UriChange, decode721Transfer } from './evm'
-import { contractOf, mapAndMatch } from './extract'
+import { bigintOf, contractOf, mapAndMatch } from './extract'
 import {
   BurnMultiTokenEvent,
   BurnSingleTokenEvent,
@@ -26,7 +27,7 @@ export function getCreateTokenEvent(ctx: Context): CreateTokenEvent {
   const metadata = tokenUriOf(collectionId, tokenId.toString())
   // const metadata = Promise.resolve('')
 
-  return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: 1 }
+  return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: BIGINT_ONE  }
 }
 
 export function getSingleCreateTokenEvent(ctx: Context): CreateTokenEvent {
@@ -35,7 +36,7 @@ export function getSingleCreateTokenEvent(ctx: Context): CreateTokenEvent {
   // const metadata = uriOf(collectionId, tokenId.toString())
   const metadata = Promise.resolve('')
 
-  return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: value.toNumber() }
+  return { collectionId, caller: to, sn: tokenId.toString(), metadata, count: bigintOf(value) }
 }
 
 export function getMultiCreateTokenEvent(
@@ -80,7 +81,7 @@ export function getTokenUriChangeEvent(ctx: Context): ChangeMetadataEvent {
 export function getSingleTransferTokenEvent(ctx: Context): TransferSingleTokenEvent {
   const { from, to, id, value } = decode1155SingleTransfer(ctx)
   const collectionId = contractOf(ctx)
-  return { collectionId, caller: from, sn: id.toString(), to, count: value.toNumber() }
+  return { collectionId, caller: from, sn: id.toString(), to, count: bigintOf(value) }
 }
 
 export function getMultiTransferTokenEvent(ctx: Context): TransferMultiTokenEvent {
@@ -93,7 +94,7 @@ export function getMultiTransferTokenEvent(ctx: Context): TransferMultiTokenEven
 export function getSingleBurnTokenEvent(ctx: Context): BurnSingleTokenEvent {
   const { from, id, value } = decode1155SingleTransfer(ctx)
   const collectionId = contractOf(ctx)
-  return { collectionId, caller: from, sn: id.toString(), count: value.toNumber() }
+  return { collectionId, caller: from, sn: id.toString(), count: bigintOf(value) }
 }
 
 export function getMultiBurnTokenEvent(ctx: Context): BurnMultiTokenEvent {

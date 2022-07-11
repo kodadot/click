@@ -96,7 +96,7 @@ export type BurnMultiTokenEvent = BaseMultiTokenEvent
 
 type TransferBatchList = {
   snList: string[];
-  countList: number[];
+  countList: bigint[];
 }
 
 export type ChangeMetadataEvent = BaseTokenEvent & OptionalMeta
@@ -132,7 +132,7 @@ export type SomethingWithOptionalMeta = {
 }
 
 export type WithCount = {
-  count: number;
+  count: bigint;
 }
 
 export type UnwrapFunc<T> = (ctx: Context) => T
