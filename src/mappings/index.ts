@@ -17,10 +17,9 @@ import {
   getCreateTokenEvent, getMultiBurnTokenEvent, getMultiCreateTokenEvent, getMultiTransferTokenEvent, getSingleBurnTokenEvent, getSingleCreateTokenEvent, getSingleTransferTokenEvent, getTokenUriChangeEvent, getTransferTokenEvent
 } from './utils/getters'
 import { isEmpty } from './utils/helper'
-import logger, { logError, metaLog } from './utils/logger'
+import logger, { logError, transferDebug } from './utils/logger'
 import { fetchMetadata } from './utils/metadata'
 import { findAll1155Tokens } from './utils/query'
-import { serializer } from './utils/serializer'
 import {
   attributeFrom,
   BaseCall, Context, ensure,
@@ -61,7 +60,7 @@ async function handleMetadata(
 export async function handleCollectionCreate(context: Context): Promise<void> {
   logger.pending(`[COLECTTION++]: ${context.substrate.block.height}`)
   const event = unwrap(context, getCreateCollectionEvent)
-  logger.debug(`collection: ${JSON.stringify(event, serializer, 2)}`)
+  // logger.debug(`collection: ${JSON.stringify(event, serializer, 2)}`)
   const final = await getOrCreate<CE>(context.store, CE, event.id, {})
   plsBe(remintable, final)
 
@@ -75,7 +74,7 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
   final.updatedAt = event.timestamp
 
 
-  logger.debug(`metadata: ${event.metadata}`)
+  // logger.debug(`metadata: ${event.metadata}`)
 
   if (final.metadata) {
     const metadata = await handleMetadata(final.metadata, context.store)
@@ -91,7 +90,7 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
 export async function handleTokenCreate(context: Context): Promise<void> {
   logger.pending(`[NFT++]: ${context.substrate.block.height}`)
   const event = unwrap(context, getCreateTokenEvent)
-  metaLog('Non-fungible', event)
+  // metaLog('Non-fungible', event)
   const id = createTokenId(event.collectionId, event.sn)
   const collection = ensure<CE>(
     await get<CE>(context.store, CE, event.collectionId)
@@ -132,7 +131,7 @@ export async function handleSingleTokenCreate(context: Context, fromTransfer: bo
     logger.pending(`[Single NFT++]: ${context.substrate.block.height}`)
   }
   const event = unwrap(context, getSingleCreateTokenEvent)
-  metaLog('Fungible', event)
+  // metaLog('Fungible', event)
   const id = createFungibleTokenId(event.collectionId, event.sn, event.caller)
   const collection = ensure<CE>(
     await get<CE>(context.store, CE, event.collectionId)
@@ -179,7 +178,7 @@ export async function handleMultiTokenCreate(context: Context, fromTransfer: boo
     logger.pending(`[Single NFT++]: ${context.substrate.block.height}`)
   }
   const event = unwrap(context, getMultiCreateTokenEvent)
-  metaLog('Fungible', event)
+  // metaLog('Fungible', event)
   const collection = ensure<CE>(
     await get<CE>(context.store, CE, event.collectionId)
   )
@@ -259,7 +258,7 @@ export async function handleSingleTokenBurn(context: Context, fromTransfer: bool
     logger.pending(`[BURN]: ${context.substrate.block.height}`)
   }
   const event = unwrap(context, getSingleBurnTokenEvent)
-  logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
+  // logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
   const id = createFungibleTokenId(event.collectionId, event.sn, event.caller)
   const entity = ensure<NE>(await get(context.store, NE, id))
   plsBe(real, entity)
@@ -286,7 +285,7 @@ export async function handleMultiTokenBurn(context: Context, fromTransfer: boole
     logger.pending(`[BURN]: ${context.substrate.block.height}`)
   }
   const event = unwrap(context, getMultiBurnTokenEvent)
-  logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
+  // logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
 
   for (const index in event.snList) {
     const id = createFungibleTokenId(event.collectionId, event.snList[index], event.caller)
@@ -314,7 +313,7 @@ export async function handleMultiTokenBurn(context: Context, fromTransfer: boole
 export async function handleTokenTransfer(context: Context): Promise<void> {
   logger.pending(`[SEND]: ${context.substrate.block.height}`)
   const event = unwrap(context, getTransferTokenEvent)
-  logger.debug(`send: ${JSON.stringify(event, serializer, 2)}`)
+  // logger.debug(`send: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
   const entity = ensure<NE>(await get(context.store, NE, id))
   plsBe(real, entity)
@@ -331,7 +330,7 @@ export async function handleTokenTransfer(context: Context): Promise<void> {
 export async function handleTokenBurn(context: Context): Promise<void> {
   logger.pending(`[BURN]: ${context.substrate.block.height}`)
   const event = unwrap(context, getBurnTokenEvent)
-  logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
+  // logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
   const entity = ensure<NE>(await get(context.store, NE, id))
   plsBe(real, entity)
@@ -371,15 +370,17 @@ async function createEvent(
 
 
 export async function forceCreateContract(ctx: BlockHandlerContext) {
-  const contracts = Object.entries(ContractsMap).map(([id, contract]) => {
-    metaLog('Building CONTRACT', { id, name: contract.name })
+  const meta = await Promise.all(Object.values(ContractsMap).map(({ metadata }) => metadata).map(m => handleMetadata(m, ctx.store)))
+  const contracts = Object.entries(ContractsMap).map(([id, contract], index) => {
+    logger.pending(`Building`, id, contract.name)
     return new CE({
       id,
-      ...contract
+      ...contract,
+      meta: meta[index]
     })
   })
 
-  metaLog('CONTRACT DONE', { count: contracts.length })
+  logger.complete('[FORCE] CONTRACTS', contracts.length)
   
   await ctx.store.save(contracts);
 }
@@ -399,15 +400,15 @@ export async function mutliMainFrame(ctx: Context): Promise<void> {
   const transfer = decode1155MultiTransfer(ctx)
   switch (whatIsThisTransfer(transfer)) {
     case Interaction.MINTNFT:
-      metaLog(Interaction.MINTNFT, transfer)
+      transferDebug(Interaction.MINTNFT, transfer)
       await handleMultiTokenCreate(ctx)
       break
     case Interaction.SEND:
-      metaLog(Interaction.SEND, transfer)
+      transferDebug(Interaction.SEND, transfer)
       await handleMultiTokenTransfer(ctx)
       break
     case Interaction.CONSUME:
-      metaLog(Interaction.CONSUME, transfer)
+      transferDebug(Interaction.CONSUME, transfer)
       await handleMultiTokenBurn(ctx)
       break
     default:
@@ -418,17 +419,17 @@ export async function mutliMainFrame(ctx: Context): Promise<void> {
 async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = CollectionType.ERC721) {
   switch (whatIsThisTransfer(transfer)) {
     case Interaction.MINTNFT:
-      metaLog(Interaction.MINTNFT, transfer)
+      transferDebug(Interaction.MINTNFT, transfer)
       const createCb = isERC721(type) ? handleTokenCreate : handleSingleTokenCreate
       await createCb(ctx)
       break
     case Interaction.SEND:
-      metaLog(Interaction.SEND, transfer)
+      transferDebug(Interaction.SEND, transfer)
       const transferCb = isERC721(type) ? handleTokenTransfer : handleSingleTokenTransfer
       await transferCb(ctx)
       break
     case Interaction.CONSUME:
-      metaLog(Interaction.CONSUME, transfer)
+      transferDebug(Interaction.CONSUME, transfer)
       const burnCb = isERC721(type) ? handleTokenBurn : handleSingleTokenBurn
       await burnCb(ctx)
       break
@@ -441,7 +442,7 @@ async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = Co
 export async function handleUriChnage(context: Context): Promise<void> {
   logger.pending(`[NEW URI]: ${context.substrate.block.height}`)
   const event = unwrap(context, getTokenUriChangeEvent)
-  metaLog('NEW URI', event)
+  logger.debug('NEW URI', event.metadata)
   if (!event.metadata) {
     logger.warn(`No metadata for ${event.collectionId}`)
     return

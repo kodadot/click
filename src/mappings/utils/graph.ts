@@ -1,6 +1,6 @@
 import Axios from 'axios'
-import { Contract } from 'ethers'
 import { Contracts } from '../../processable'
+import logger from './logger'
 
 
 export const BASE_URL = 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/'
@@ -13,6 +13,19 @@ const api = Axios.create({
   withCredentials: false,
 })
 
+const query = `
+query MyQuery($id: ID!) {
+  token(id: $id) {
+    uri
+  }
+}
+`
+
+const unwrap = ({ data }: { data: { token: null | { uri: string } } }) => data.token ? data.token.uri : ''
+const logFail = (err: any) => {
+  logger.warn('Failed to get token URI', err)
+  return ''
+}
 
 const baseUrl: Record<Contracts, string> = {
   [Contracts.Moonsama]: 'nft',
@@ -26,3 +39,36 @@ const baseUrl: Record<Contracts, string> = {
   [Contracts.Blvck]: ''
 }
 
+type MapFn = (id: string) => string
+const sameVal: MapFn = (id: string) => id
+const hexify: MapFn = (id: string) => '0x' + Number(id).toString(16)
+
+const mappers: Record<Contracts, MapFn> = {
+  [Contracts.Moonsama]: hexify,
+  [Contracts.Pondsama]: sameVal,
+  [Contracts.Moonx]: sameVal,
+  [Contracts.Factory]: sameVal,
+  [Contracts.Art]: sameVal,
+  [Contracts.Plot]: hexify,
+  [Contracts.Box]: sameVal,
+  [Contracts.Embassy]: sameVal,
+  [Contracts.Blvck]: hexify
+}
+
+export const contractHasGraph = (contract: Contracts | string): boolean =>  baseUrl[contract as Contracts] !== ''
+
+export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
+  const endpoint = baseUrl[contract as Contracts]
+  if (!endpoint) {
+    return Promise.resolve('')
+  }
+
+  const id = mappers[contract as Contracts](tokenId)
+  return api.post(endpoint, {
+    query,
+    variables: { id }
+  })
+  .then(({ data }) =>  data)
+  .then(unwrap)
+  .catch(logFail)
+}
