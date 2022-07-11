@@ -1,15 +1,10 @@
 import { lookupArchive } from "@subsquid/archive-registry"
 import {
-  EvmLogHandlerContext,
   SubstrateEvmProcessor
 } from "@subsquid/substrate-evm-processor"
 import { CHAIN_NODE } from "./contract"
 import * as mappings from './mappings'
-import { decode1155MultiTransfer, multiTransferFilter, singleTransferFilter, transferFilter } from './mappings/utils/evm'
-import { unwrap } from './mappings/utils/extract'
-import { getMultiCreateTokenEvent } from './mappings/utils/getters'
-import logger from './mappings/utils/logger'
-import { serializer } from './mappings/utils/serializer'
+import { multiTransferFilter, singleTransferFilter, transferFilter } from './mappings/utils/evm'
 import { Contracts } from './processable'
 
 const processor = new SubstrateEvmProcessor("moonriver-substrate");
