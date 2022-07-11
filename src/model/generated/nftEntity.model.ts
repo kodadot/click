@@ -58,8 +58,8 @@ export class NFTEntity {
   @Column_("text", {nullable: false})
   sn!: string
 
-  @Column_("int4", {nullable: false})
-  count!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  count!: bigint
 
   @Column_("timestamp with time zone", {nullable: false})
   updatedAt!: Date
