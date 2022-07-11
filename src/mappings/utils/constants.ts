@@ -1,1 +1,4 @@
 export const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+export const BIGINT_ZERO = BigInt(0);
+export const BIGINT_ONE = BigInt(1);
