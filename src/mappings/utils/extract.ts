@@ -1,6 +1,7 @@
 
 import { BaseCall, CallWith, Context, UnwrapFunc } from './types'
 import { BigNumber } from 'ethers'
+import { BIGINT_ZERO } from './constants'
 
 function toBaseEvent(event: Context): BaseCall {
   const caller = event.substrate.extrinsic?.signer.toString() || ''; 
@@ -26,20 +27,20 @@ export const createTokenId = (collection: string, id: string) => `${collection}-
 export const createFungibleTokenId = (collection: string, id: string, caller: string) => `${createTokenId(collection, id)}-${caller}`
 
 
-export const mapAndMatch = (ids: BigNumber[], values: BigNumber[]): Record<string, number> => {
+export const mapAndMatch = (ids: BigNumber[], values: BigNumber[]): Record<string, bigint> => {
   const tokenIdList = ids.map(stringOf)
-  const counts = values.map(numberOf)
+  const counts = values.map(bigintOf)
 
   return matcher(tokenIdList, counts)
 }
 
 export const matcher = (
   ids: string[],
-  counts: number[]
-): Record<string, number> => {
-  const map: Record<string, number> = {};
+  counts: bigint[]
+): Record<string, bigint> => {
+  const map: Record<string, bigint> = {};
   ids.forEach((val, index) => {
-    if (counts[index] === 0) {
+    if (counts[index] === BIGINT_ZERO) {
       return;
     }
     if (!map[val]) {
@@ -59,4 +60,8 @@ export function stringOf(bn: BigNumber): string {
 
 export function numberOf(bn: BigNumber): number {
   return bn.toNumber();
+}
+
+export function bigintOf(bn: BigNumber): bigint {
+  return bn.toBigInt();
 }
