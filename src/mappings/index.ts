@@ -8,7 +8,7 @@ import {
 } from '../model'
 import { ContractsMap } from '../processable'
 import { created, plsBe, real, remintable } from './utils/consolidator'
-import { EMPTY_ADDRESS } from './utils/constants'
+import { BIGINT_ZERO, EMPTY_ADDRESS } from './utils/constants'
 import { create, get, getOrCreate } from './utils/entity'
 import { decode1155MultiTransfer, decode1155SingleTransfer, decode721Transfer, RealTransferEvent, whatIsThisTransfer } from './utils/evm'
 import { createFungibleTokenId, createTokenId, unwrap } from './utils/extract'
@@ -226,7 +226,7 @@ export async function handleMultiTokenCreate(context: Context, fromTransfer: boo
 export async function handleSingleTokenTransfer(context: Context): Promise<void> {
   logger.pending(`[SEND]: ${context.substrate.block.height}`)
   const event = unwrap(context, getSingleTransferTokenEvent)
-  if (event.count === 0) {
+  if (event.count === BIGINT_ZERO) {
     logger.warn(`[SEND] ${event.caller} sent 0 tokens`)
     return
   }
@@ -265,7 +265,7 @@ export async function handleSingleTokenBurn(context: Context, fromTransfer: bool
 
   entity.count -= event.count
 
-  if (entity.count === 0) {
+  if (entity.count === BIGINT_ZERO) {
     entity.burned = true
   }
 
@@ -294,7 +294,7 @@ export async function handleMultiTokenBurn(context: Context, fromTransfer: boole
 
     entity.count -= event.countList[index]
 
-    if (entity.count === 0) {
+    if (entity.count === BIGINT_ZERO) {
       entity.burned = true
     }
 
