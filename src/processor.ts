@@ -29,18 +29,17 @@ processor.addEvmLogHandler(Contracts.Pondsama, transferFilter, mappings.mainFram
 processor.addEvmLogHandler(Contracts.Plot, transferFilter, mappings.mainFrame);
 // processor.addEvmLogHandler(Contracts.Blvck, transferFilter, mappings.mainFrame); // TODO: handle separately
 
-// processor.addEvmLogHandler(Contracts.Moonx, singleTransferFilter, mappings.singleMainFrame);
-// processor.addEvmLogHandler(Contracts.Factory, singleTransferFilter, mappings.singleMainFrame);
-// processor.addEvmLogHandler(Contracts.Art, singleTransferFilter, mappings.singleMainFrame);
-// processor.addEvmLogHandler(Contracts.Box, singleTransferFilter, mappings.singleMainFrame);
-// processor.addEvmLogHandler(Contracts.Embassy, singleTransferFilter, mappings.singleMainFrame);
+processor.addEvmLogHandler(Contracts.Moonx, singleTransferFilter, mappings.singleMainFrame);
+processor.addEvmLogHandler(Contracts.Factory, singleTransferFilter, mappings.singleMainFrame);
+processor.addEvmLogHandler(Contracts.Art, singleTransferFilter, mappings.singleMainFrame);
+processor.addEvmLogHandler(Contracts.Box, singleTransferFilter, mappings.singleMainFrame);
+processor.addEvmLogHandler(Contracts.Embassy, singleTransferFilter, mappings.singleMainFrame);
 
-
-// processor.addEvmLogHandler(Contracts.Moonx, multiTransferFilter, mappings.mutliMainFrame);
-// processor.addEvmLogHandler(Contracts.Factory, multiTransferFilter, mappings.mutliMainFrame);
-// processor.addEvmLogHandler(Contracts.Art, multiTransferFilter, mappings.mutliMainFrame);
-// processor.addEvmLogHandler(Contracts.Box, multiTransferFilter, mappings.mutliMainFrame);
-// processor.addEvmLogHandler(Contracts.Embassy, multiTransferFilter, mappings.mutliMainFrame);
+processor.addEvmLogHandler(Contracts.Moonx, multiTransferFilter, mappings.mutliMainFrame);
+processor.addEvmLogHandler(Contracts.Factory, multiTransferFilter, mappings.mutliMainFrame);
+processor.addEvmLogHandler(Contracts.Art, multiTransferFilter, mappings.mutliMainFrame);
+processor.addEvmLogHandler(Contracts.Box, multiTransferFilter, mappings.mutliMainFrame);
+processor.addEvmLogHandler(Contracts.Embassy, multiTransferFilter, mappings.mutliMainFrame);
 
 // processor.addEvmLogHandler(
 //   Contracts.Moonx,
