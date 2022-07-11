@@ -55,6 +55,8 @@ const mappers: Record<Contracts, MapFn> = {
   [Contracts.Blvck]: hexify
 }
 
+export const contractHasGraph = (contract: Contracts | string): boolean =>  baseUrl[contract as Contracts] !== ''
+
 export const tokenUriOf = (contract: string, tokenId: string): Promise<string> => {
   const endpoint = baseUrl[contract as Contracts]
   if (!endpoint) {
