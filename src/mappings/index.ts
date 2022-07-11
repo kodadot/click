@@ -370,13 +370,13 @@ async function createEvent(
 
 
 export async function forceCreateContract(ctx: BlockHandlerContext) {
-  // const meta = await Promise.all(Object.values(ContractsMap).map(({ metadata }) => metadata).map(m => handleMetadata(m, ctx.store)))
+  const meta = await Promise.all(Object.values(ContractsMap).map(({ metadata }) => metadata).map(m => handleMetadata(m, ctx.store)))
   const contracts = Object.entries(ContractsMap).map(([id, contract], index) => {
     logger.pending(`Building`, id, contract.name)
     return new CE({
       id,
       ...contract,
-      // meta: meta[index]
+      meta: meta[index]
     })
   })
 

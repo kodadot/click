@@ -30,8 +30,8 @@ processor.setTypesBundle("moonbeam");
 processor.addPreHook({ range: { from: 0, to: 0 } }, mappings.forceCreateContract);
 
 processor.addEvmLogHandler(Contracts.Moonsama, transferFilter, mappings.mainFrame);
-// processor.addEvmLogHandler(Contracts.Pondsama, transferFilter, mappings.mainFrame);
-// processor.addEvmLogHandler(Contracts.Plot, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.Pondsama, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.Plot, transferFilter, mappings.mainFrame);
 // processor.addEvmLogHandler(Contracts.Blvck, transferFilter, mappings.mainFrame); // TODO: handle separately
 
 // processor.addEvmLogHandler(Contracts.Moonx, singleTransferFilter, mappings.singleMainFrame);
