@@ -1,10 +1,12 @@
-import { EvmLogHandlerContext } from '@subsquid/substrate-evm-processor'
+import { EvmLogHandlerContext, EvmLogHandler } from '@subsquid/substrate-processor'
 import md5 from 'md5'
 import { nanoid } from 'nanoid'
 import { Attribute } from '../../model/generated/_attribute'
 import { Interaction } from '../../model/generated/_interaction'
 import { createTokenId } from './extract'
-
+import { EvmLogOptions } from '@subsquid/substrate-processor'
+import { NoDataSelection } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { EntityManager } from 'typeorm'
 export type BaseCall = {
   caller: string;
   blockNumber: string;
@@ -13,8 +15,9 @@ export type BaseCall = {
 
 export { Interaction }
 
-
+// export type Store = EntityManager
 type OneOfInteraction = Interaction
+export type EvmLogHandlerOptions = EvmLogOptions & NoDataSelection
 
 
 export function eventFrom<T>(interaction: T,  { blockNumber, caller, timestamp }: BaseCall, meta: string, currentOwner?: string): IEvent<T> {
@@ -36,7 +39,8 @@ export function attributeFrom(attribute: MetadataAttribute): Attribute {
   })
 }
 
-export type Context = EvmLogHandlerContext
+export type Store = EntityManager
+export type Context = EvmLogHandlerContext<Store>
 // export type Context = EventHandlerContext
 
 export type Optional<T> = T | null
