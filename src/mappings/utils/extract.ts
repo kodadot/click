@@ -2,17 +2,18 @@
 import { BaseCall, CallWith, Context, UnwrapFunc } from './types'
 import { BigNumber } from 'ethers'
 import { BIGINT_ZERO } from './constants'
+import { addressOf } from './helper'
 
-function toBaseEvent(event: Context): BaseCall {
-  const caller = event.substrate.extrinsic?.signer.toString() || ''; 
-  const blockNumber = event.substrate.block.height.toString();
-  const timestamp = new Date(event.substrate.block.timestamp);
+function toBaseEvent(context: Context): BaseCall {
+  const caller = addressOf(context.event.extrinsic.signature?.address)
+  const blockNumber = context.block.height.toString();
+  const timestamp = new Date(context.block.timestamp);
 
   return { caller, blockNumber, timestamp };
 }
 
 export function contractOf(event: Context): string {
-  return event.contractAddress
+  return event.event.args.address
 }
 
 
