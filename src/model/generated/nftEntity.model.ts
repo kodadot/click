@@ -20,7 +20,7 @@ export class NFTEntity {
   burned!: boolean
 
   @Index_()
-  @ManyToOne_(() => CollectionEntity, {nullable: false})
+  @ManyToOne_(() => CollectionEntity, {nullable: true})
   collection!: CollectionEntity
 
   @Column_("timestamp with time zone", {nullable: false})
