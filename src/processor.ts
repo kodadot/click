@@ -4,13 +4,12 @@ import {
   SubstrateProcessor,
 } from "@subsquid/substrate-processor";
 import { FullTypeormDatabase as Database } from '@subsquid/typeorm-store'
-import { CHAIN_NODE } from "./contract"
+import { CHAIN_NODE, getAddress } from "./contract"
 import * as mappings from './mappings'
 import { multiTransferFilter, singleTransferFilter, transferFilter } from './mappings/utils/evm'
 import { Contracts } from './processable'
 import * as erc721 from "./abi/erc721";
 import { Context } from './mappings/utils/types'
-import { toBaseEvent, unwrap } from './mappings/utils/extract'
 import logger from './mappings/utils/logger'
 import { serializer } from './mappings/utils/serializer'
 
@@ -59,9 +58,12 @@ export async function contractLogsHandler(
   ctx: Context
 ): Promise<void> {
   // const data = toBaseEvent(ctx)
-  const data = { block: ctx.block, event: ctx.event }
+  const data = { block: ctx.block, event: ctx.event, hash: ctx.event.evmTxHash }
+  const hash = ctx.event.evmTxHash
+  const signature = ctx.event.call.args.transaction.signature
 
-  logger.debug(`Transfer: ${JSON.stringify(data, serializer, 2)}`)
+  logger.debug(`Hash: ${JSON.stringify({ hash, signature, from: getAddress(hash, signature), iwant: '0x495e889d1a6ceb447a57dcc1c68410299392380c' },null, 2)}`)
+  // logger.debug(`Transfer: ${JSON.stringify(data, serializer, 2)}`)
   // logger.debug(`contractAddress: ${ctx.contractAddress}`)
 }
 

@@ -1,4 +1,4 @@
-import { Contract, ethers } from "ethers"
+import { Contract, ethers, Signature } from "ethers"
 import * as erc721 from "./abi/erc721"
 import * as erc1155 from "./abi/erc1155"
 import { CollectionType } from "./model"
@@ -54,4 +54,13 @@ export function eitherOr<T>(type = CollectionType.ERC721, one: T, two: T): T {
 
 export function isERC721(type: CollectionType): boolean {
   return type === CollectionType.ERC721;
+}
+
+export function getAddress(hash: string, signature: Signature): string {
+  const pk = ethers.utils.recoverPublicKey(
+    ethers.utils.arrayify(ethers.utils.hashMessage(ethers.utils.arrayify(hash))),
+    signature
+  )
+  // return ethers.utils.getAddress(pk)
+  return ethers.utils.computeAddress(pk)
 }
