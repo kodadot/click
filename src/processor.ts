@@ -11,7 +11,7 @@ import { Contracts } from './processable'
 const database = new Database();
 const processor = new SubstrateProcessor(database)
 
-processor.setBatchSize(500);
+processor.setBatchSize(50);
 
 processor.setDataSource({
   chain: CHAIN_NODE,
