@@ -4,7 +4,7 @@ import * as erc1155 from '../../abi/erc1155'
 import { Context, EvmLogHandlerOptions, Interaction } from './types'
 
 
-export type RealTransferEvent = erc721.TransferAddressAddressUint256Event | erc1155.TransferSingle0Event | erc1155.TransferBatch0Event
+export type RealTransferEvent = erc721.Transfer0Event | erc1155.TransferSingle0Event | erc1155.TransferBatch0Event
 
 
 export const isMint = (addrOne: string, addrTwo: string) => {
@@ -31,7 +31,7 @@ export const whatIsThisTransfer = (transfer: RealTransferEvent): Interaction => 
   return Interaction.SEND
 }
 
-export function decode721Transfer({ event }: Context): erc721.TransferAddressAddressUint256Event {
+export function decode721Transfer({ event }: Context): erc721.Transfer0Event {
   return erc721.events["Transfer(address,address,uint256)"].decode(event.args)
 }
 
