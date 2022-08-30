@@ -1,5 +1,4 @@
-import { exit } from 'process'
-import { tokenUriOf } from '../../contract'
+import { tokenUriOf, uriOf } from '../../contract'
 import { BIGINT_ONE } from './constants'
 import { decode1155MultiTransfer, decode1155SingleTransfer, decode1155UriChange, decode721Transfer } from './evm'
 import { bigintOf, contractOf, mapAndMatch } from './extract'
