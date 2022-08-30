@@ -6,7 +6,7 @@ import {
 import { FullTypeormDatabase as Database } from '@subsquid/typeorm-store'
 import { CHAIN_NODE, getAddress } from "./contract"
 import * as mappings from './mappings'
-import { multiTransferFilter, singleTransferFilter, transferFilter } from './mappings/utils/evm'
+import { decode1155MultiTransfer, multiTransferFilter, singleTransferFilter, transferFilter } from './mappings/utils/evm'
 import { Contracts } from './processable'
 import * as erc721 from "./abi/erc721";
 import { Context } from './mappings/utils/types'
@@ -49,22 +49,17 @@ processor.setTypesBundle("moonbeam");
 // processor.addEvmLogHandler(Contracts.Embassy, multiTransferFilter, mappings.mutliMainFrame);
 
 processor.addEvmLogHandler(
-  Contracts.Moonsama,
-  {...transferFilter, range: { from: 569006, to: 569006 }},
+  Contracts.Moonx,
+  {...multiTransferFilter, range: { from: 1303535, to: 1303535 }},
   contractLogsHandler
 );
 
 export async function contractLogsHandler(
   ctx: Context
 ): Promise<void> {
-  // const data = toBaseEvent(ctx)
-  const data = { block: ctx.block, event: ctx.event, hash: ctx.event.evmTxHash }
-  const hash = ctx.event.evmTxHash
-  const signature = ctx.event.call.args.transaction.signature
-
-  logger.debug(`Hash: ${JSON.stringify({ hash, signature, from: getAddress(hash, signature), iwant: '0x495e889d1a6ceb447a57dcc1c68410299392380c' },null, 2)}`)
-  // logger.debug(`Transfer: ${JSON.stringify(data, serializer, 2)}`)
-  // logger.debug(`contractAddress: ${ctx.contractAddress}`)
+  // const data = { block: ctx.block, event: ctx.event, hash: ctx.event.evmTxHash }
+  const transfer = decode1155MultiTransfer(ctx)
+  logger.debug(`Transfer: ${JSON.stringify(transfer, serializer, 2)}`)
 }
 
 processor.run();
