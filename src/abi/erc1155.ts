@@ -1,107 +1,161 @@
 import * as ethers from "ethers";
+import assert from "assert";
 
 export const abi = new ethers.utils.Interface(getJsonAbi());
 
-export interface ApprovalForAll0Event {
-  account: string;
-  operator: string;
-  approved: boolean;
-}
+export type ApprovalForAll0Event = ([account: string, operator: string, approved: boolean] & {account: string, operator: string, approved: boolean})
 
-export interface TransferBatch0Event {
-  operator: string;
-  from: string;
-  to: string;
-  ids: Array<ethers.BigNumber>;
-  values: Array<ethers.BigNumber>;
-}
+export type TransferBatch0Event = ([operator: string, from: string, to: string, ids: Array<ethers.BigNumber>, values: Array<ethers.BigNumber>] & {operator: string, from: string, to: string, ids: Array<ethers.BigNumber>})
 
-export interface TransferSingle0Event {
-  operator: string;
-  from: string;
-  to: string;
-  id: ethers.BigNumber;
-  value: ethers.BigNumber;
-}
+export type TransferSingle0Event = ([operator: string, from: string, to: string, id: ethers.BigNumber, value: ethers.BigNumber] & {operator: string, from: string, to: string, id: ethers.BigNumber, value: ethers.BigNumber})
 
-export interface URI0Event {
-  value: string;
-  id: ethers.BigNumber;
-}
+export type URI0Event = ([value: string, id: ethers.BigNumber] & {value: string, id: ethers.BigNumber})
 
-export interface EvmEvent {
+export interface EvmLog {
   data: string;
   topics: string[];
 }
 
+function decodeEvent(signature: string, data: EvmLog): any {
+  return abi.decodeEventLog(
+    abi.getEvent(signature),
+    data.data || "",
+    data.topics
+  );
+}
+
 export const events = {
-  "ApprovalForAll(address,address,bool)":  {
+  "ApprovalForAll(address,address,bool)": {
     topic: abi.getEventTopic("ApprovalForAll(address,address,bool)"),
-    decode(data: EvmEvent): ApprovalForAll0Event {
-      const result = abi.decodeEventLog(
-        abi.getEvent("ApprovalForAll(address,address,bool)"),
-        data.data || "",
-        data.topics
-      );
-      return  {
-        account: result[0],
-        operator: result[1],
-        approved: result[2],
-      }
+    decode(data: EvmLog): ApprovalForAll0Event {
+      return decodeEvent("ApprovalForAll(address,address,bool)", data)
     }
   }
   ,
-  "TransferBatch(address,address,address,uint256[],uint256[])":  {
+  "TransferBatch(address,address,address,uint256[],uint256[])": {
     topic: abi.getEventTopic("TransferBatch(address,address,address,uint256[],uint256[])"),
-    decode(data: EvmEvent): TransferBatch0Event {
-      const result = abi.decodeEventLog(
-        abi.getEvent("TransferBatch(address,address,address,uint256[],uint256[])"),
-        data.data || "",
-        data.topics
-      );
-      return  {
-        operator: result[0],
-        from: result[1],
-        to: result[2],
-        ids: result[3],
-        values: result[4],
-      }
+    decode(data: EvmLog): TransferBatch0Event {
+      return decodeEvent("TransferBatch(address,address,address,uint256[],uint256[])", data)
     }
   }
   ,
-  "TransferSingle(address,address,address,uint256,uint256)":  {
+  "TransferSingle(address,address,address,uint256,uint256)": {
     topic: abi.getEventTopic("TransferSingle(address,address,address,uint256,uint256)"),
-    decode(data: EvmEvent): TransferSingle0Event {
-      const result = abi.decodeEventLog(
-        abi.getEvent("TransferSingle(address,address,address,uint256,uint256)"),
-        data.data || "",
-        data.topics
-      );
-      return  {
-        operator: result[0],
-        from: result[1],
-        to: result[2],
-        id: result[3],
-        value: result[4],
-      }
+    decode(data: EvmLog): TransferSingle0Event {
+      return decodeEvent("TransferSingle(address,address,address,uint256,uint256)", data)
     }
   }
   ,
-  "URI(string,uint256)":  {
+  "URI(string,uint256)": {
     topic: abi.getEventTopic("URI(string,uint256)"),
-    decode(data: EvmEvent): URI0Event {
-      const result = abi.decodeEventLog(
-        abi.getEvent("URI(string,uint256)"),
-        data.data || "",
-        data.topics
-      );
-      return  {
-        value: result[0],
-        id: result[1],
-      }
+    decode(data: EvmLog): URI0Event {
+      return decodeEvent("URI(string,uint256)", data)
     }
   }
   ,
+}
+
+export type SafeBatchTransferFrom0Function = ([from: string, to: string, ids: Array<ethers.BigNumber>, amounts: Array<ethers.BigNumber>, data: string] & {from: string, to: string, ids: Array<ethers.BigNumber>, amounts: Array<ethers.BigNumber>, data: string})
+
+export type SafeTransferFrom0Function = ([from: string, to: string, id: ethers.BigNumber, amount: ethers.BigNumber, data: string] & {from: string, to: string, id: ethers.BigNumber, amount: ethers.BigNumber, data: string})
+
+export type SetApprovalForAll0Function = ([operator: string, approved: boolean] & {operator: string, approved: boolean})
+
+
+function decodeFunction(data: string): any {
+  return abi.decodeFunctionData(data.slice(0, 10), data)
+}
+
+export const functions = {
+  "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": {
+    sighash: abi.getSighash("safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)"),
+    decode(input: string): SafeBatchTransferFrom0Function {
+      return decodeFunction(input)
+    }
+  }
+  ,
+  "safeTransferFrom(address,address,uint256,uint256,bytes)": {
+    sighash: abi.getSighash("safeTransferFrom(address,address,uint256,uint256,bytes)"),
+    decode(input: string): SafeTransferFrom0Function {
+      return decodeFunction(input)
+    }
+  }
+  ,
+  "setApprovalForAll(address,bool)": {
+    sighash: abi.getSighash("setApprovalForAll(address,bool)"),
+    decode(input: string): SetApprovalForAll0Function {
+      return decodeFunction(input)
+    }
+  }
+  ,
+}
+
+interface ChainContext  {
+  _chain: Chain
+}
+
+interface BlockContext  {
+  _chain: Chain
+  block: Block
+}
+
+interface Block  {
+  height: number
+}
+
+interface Chain  {
+  client:  {
+    call: <T=any>(method: string, params?: unknown[]) => Promise<T>
+  }
+}
+
+export class Contract  {
+  private readonly _chain: Chain
+  private readonly blockHeight: number
+  readonly address: string
+
+  constructor(ctx: BlockContext, address: string)
+  constructor(ctx: ChainContext, block: Block, address: string)
+  constructor(ctx: BlockContext, blockOrAddress: Block | string, address?: string) {
+    this._chain = ctx._chain
+    if (typeof blockOrAddress === 'string')  {
+      this.blockHeight = ctx.block.height
+      this.address = ethers.utils.getAddress(blockOrAddress)
+    }
+    else  {
+      assert(address != null)
+      this.blockHeight = blockOrAddress.height
+      this.address = ethers.utils.getAddress(address)
+    }
+  }
+
+  async balanceOf(account: string, id: ethers.BigNumber): Promise<ethers.BigNumber> {
+    return this.call("balanceOf", [account, id])
+  }
+
+  async balanceOfBatch(accounts: Array<string>, ids: Array<ethers.BigNumber>): Promise<Array<ethers.BigNumber>> {
+    return this.call("balanceOfBatch", [accounts, ids])
+  }
+
+  async isApprovedForAll(account: string, operator: string): Promise<boolean> {
+    return this.call("isApprovedForAll", [account, operator])
+  }
+
+  async supportsInterface(interfaceId: string): Promise<boolean> {
+    return this.call("supportsInterface", [interfaceId])
+  }
+
+  async uri(id: ethers.BigNumber): Promise<string> {
+    return this.call("uri", [id])
+  }
+
+  private async call(name: string, args: any[]) : Promise<any> {
+    const fragment = abi.getFunction(name)
+    const data = abi.encodeFunctionData(fragment, args)
+    const result = await this._chain.client.call('eth_call', [{to: this.address, data}, this.blockHeight])
+    const decoded = abi.decodeFunctionResult(fragment, result)
+    return decoded.length > 1 ? decoded : decoded[0]
+  }
 }
 
 function getJsonAbi(): any {
