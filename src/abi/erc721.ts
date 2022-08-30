@@ -1,79 +1,198 @@
 import * as ethers from "ethers";
+import assert from "assert";
 
 export const abi = new ethers.utils.Interface(getJsonAbi());
 
-export interface ApprovalAddressAddressUint256Event {
-  owner: string;
-  approved: string;
-  tokenId: ethers.BigNumber;
-}
+export type Approval0Event = ([owner: string, approved: string, tokenId: ethers.BigNumber] & {owner: string, approved: string, tokenId: ethers.BigNumber})
 
-export interface ApprovalForAllAddressAddressBoolEvent {
-  owner: string;
-  operator: string;
-  approved: boolean;
-}
+export type ApprovalForAll0Event = ([owner: string, operator: string, approved: boolean] & {owner: string, operator: string, approved: boolean})
 
-export interface TransferAddressAddressUint256Event {
-  from: string;
-  to: string;
-  tokenId: ethers.BigNumber;
-}
+export type Transfer0Event = ([from: string, to: string, tokenId: ethers.BigNumber] & {from: string, to: string, tokenId: ethers.BigNumber})
 
-export interface EvmEvent {
+export interface EvmLog {
   data: string;
   topics: string[];
 }
 
+function decodeEvent(signature: string, data: EvmLog): any {
+  return abi.decodeEventLog(
+    abi.getEvent(signature),
+    data.data || "",
+    data.topics
+  );
+}
+
 export const events = {
-  "Approval(address,address,uint256)":  {
+  "Approval(address,address,uint256)": {
     topic: abi.getEventTopic("Approval(address,address,uint256)"),
-    decode(data: EvmEvent): ApprovalAddressAddressUint256Event {
-      const result = abi.decodeEventLog(
-        abi.getEvent("Approval(address,address,uint256)"),
-        data.data || "",
-        data.topics
-      );
-      return  {
-        owner: result[0],
-        approved: result[1],
-        tokenId: result[2],
-      }
+    decode(data: EvmLog): Approval0Event {
+      return decodeEvent("Approval(address,address,uint256)", data)
     }
   }
   ,
-  "ApprovalForAll(address,address,bool)":  {
+  "ApprovalForAll(address,address,bool)": {
     topic: abi.getEventTopic("ApprovalForAll(address,address,bool)"),
-    decode(data: EvmEvent): ApprovalForAllAddressAddressBoolEvent {
-      const result = abi.decodeEventLog(
-        abi.getEvent("ApprovalForAll(address,address,bool)"),
-        data.data || "",
-        data.topics
-      );
-      return  {
-        owner: result[0],
-        operator: result[1],
-        approved: result[2],
-      }
+    decode(data: EvmLog): ApprovalForAll0Event {
+      return decodeEvent("ApprovalForAll(address,address,bool)", data)
     }
   }
   ,
-  "Transfer(address,address,uint256)":  {
+  "Transfer(address,address,uint256)": {
     topic: abi.getEventTopic("Transfer(address,address,uint256)"),
-    decode(data: EvmEvent): TransferAddressAddressUint256Event {
-      const result = abi.decodeEventLog(
-        abi.getEvent("Transfer(address,address,uint256)"),
-        data.data || "",
-        data.topics
-      );
-      return  {
-        from: result[0],
-        to: result[1],
-        tokenId: result[2],
-      }
+    decode(data: EvmLog): Transfer0Event {
+      return decodeEvent("Transfer(address,address,uint256)", data)
     }
   }
   ,
+}
+
+export type Approve0Function = ([to: string, tokenId: ethers.BigNumber] & {to: string, tokenId: ethers.BigNumber})
+
+export type SafeTransferFrom0Function = ([from: string, to: string, tokenId: ethers.BigNumber] & {from: string, to: string, tokenId: ethers.BigNumber})
+
+export type SafeTransferFrom1Function = ([from: string, to: string, tokenId: ethers.BigNumber, _data: string] & {from: string, to: string, tokenId: ethers.BigNumber, _data: string})
+
+export type SetApprovalForAll0Function = ([operator: string, approved: boolean] & {operator: string, approved: boolean})
+
+export type TransferFrom0Function = ([from: string, to: string, tokenId: ethers.BigNumber] & {from: string, to: string, tokenId: ethers.BigNumber})
+
+
+function decodeFunction(data: string): any {
+  return abi.decodeFunctionData(data.slice(0, 10), data)
+}
+
+export const functions = {
+  "approve(address,uint256)": {
+    sighash: abi.getSighash("approve(address,uint256)"),
+    decode(input: string): Approve0Function {
+      return decodeFunction(input)
+    }
+  }
+  ,
+  "safeTransferFrom(address,address,uint256)": {
+    sighash: abi.getSighash("safeTransferFrom(address,address,uint256)"),
+    decode(input: string): SafeTransferFrom0Function {
+      return decodeFunction(input)
+    }
+  }
+  ,
+  "safeTransferFrom(address,address,uint256,bytes)": {
+    sighash: abi.getSighash("safeTransferFrom(address,address,uint256,bytes)"),
+    decode(input: string): SafeTransferFrom1Function {
+      return decodeFunction(input)
+    }
+  }
+  ,
+  "setApprovalForAll(address,bool)": {
+    sighash: abi.getSighash("setApprovalForAll(address,bool)"),
+    decode(input: string): SetApprovalForAll0Function {
+      return decodeFunction(input)
+    }
+  }
+  ,
+  "transferFrom(address,address,uint256)": {
+    sighash: abi.getSighash("transferFrom(address,address,uint256)"),
+    decode(input: string): TransferFrom0Function {
+      return decodeFunction(input)
+    }
+  }
+  ,
+}
+
+interface ChainContext  {
+  _chain: Chain
+}
+
+interface BlockContext  {
+  _chain: Chain
+  block: Block
+}
+
+interface Block  {
+  height: number
+}
+
+interface Chain  {
+  client:  {
+    call: <T=any>(method: string, params?: unknown[]) => Promise<T>
+  }
+}
+
+export class Contract  {
+  private readonly _chain: Chain
+  private readonly blockHeight: number
+  readonly address: string
+
+  constructor(ctx: BlockContext, address: string)
+  constructor(ctx: ChainContext, block: Block, address: string)
+  constructor(ctx: BlockContext, blockOrAddress: Block | string, address?: string) {
+    this._chain = ctx._chain
+    if (typeof blockOrAddress === 'string')  {
+      this.blockHeight = ctx.block.height
+      this.address = ethers.utils.getAddress(blockOrAddress)
+    }
+    else  {
+      assert(address != null)
+      this.blockHeight = blockOrAddress.height
+      this.address = ethers.utils.getAddress(address)
+    }
+  }
+
+  async balanceOf(owner: string): Promise<ethers.BigNumber> {
+    return this.call("balanceOf", [owner])
+  }
+
+  async baseURI(): Promise<string> {
+    return this.call("baseURI", [])
+  }
+
+  async getApproved(tokenId: ethers.BigNumber): Promise<string> {
+    return this.call("getApproved", [tokenId])
+  }
+
+  async isApprovedForAll(owner: string, operator: string): Promise<boolean> {
+    return this.call("isApprovedForAll", [owner, operator])
+  }
+
+  async name(): Promise<string> {
+    return this.call("name", [])
+  }
+
+  async ownerOf(tokenId: ethers.BigNumber): Promise<string> {
+    return this.call("ownerOf", [tokenId])
+  }
+
+  async supportsInterface(interfaceId: string): Promise<boolean> {
+    return this.call("supportsInterface", [interfaceId])
+  }
+
+  async symbol(): Promise<string> {
+    return this.call("symbol", [])
+  }
+
+  async tokenByIndex(index: ethers.BigNumber): Promise<ethers.BigNumber> {
+    return this.call("tokenByIndex", [index])
+  }
+
+  async tokenOfOwnerByIndex(owner: string, index: ethers.BigNumber): Promise<ethers.BigNumber> {
+    return this.call("tokenOfOwnerByIndex", [owner, index])
+  }
+
+  async tokenURI(tokenId: ethers.BigNumber): Promise<string> {
+    return this.call("tokenURI", [tokenId])
+  }
+
+  async totalSupply(): Promise<ethers.BigNumber> {
+    return this.call("totalSupply", [])
+  }
+
+  private async call(name: string, args: any[]) : Promise<any> {
+    const fragment = abi.getFunction(name)
+    const data = abi.encodeFunctionData(fragment, args)
+    const result = await this._chain.client.call('eth_call', [{to: this.address, data}, this.blockHeight])
+    const decoded = abi.decodeFunctionResult(fragment, result)
+    return decoded.length > 1 ? decoded : decoded[0]
+  }
 }
 
 function getJsonAbi(): any {

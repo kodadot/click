@@ -1,8 +1,7 @@
-import { assertNotNull, Store } from "@subsquid/substrate-evm-processor"
-import { Contract, ethers } from "ethers"
+import { Contract, ethers, Signature } from "ethers"
 import * as erc721 from "./abi/erc721"
 import * as erc1155 from "./abi/erc1155"
-import { CollectionEntity, CollectionType } from "./model"
+import { CollectionType } from "./model"
 import { Contracts, ContractsMap } from "./processable"
 import { contractHasGraph, tokenUriOf as tokenMetaOf } from './mappings/utils/graph'
  
@@ -57,29 +56,11 @@ export function isERC721(type: CollectionType): boolean {
   return type === CollectionType.ERC721;
 }
 
-export function createContractEntity(): CollectionEntity {
-  return new CollectionEntity({
-    id: contract.address,
-    name: "Moonsama",
-    symbol: "MSAMA",
-    max: 1000,
-    currentOwner: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
-    issuer: '0x05b9b543328d4c797e1eec747efc65d97de542f2',
-    updatedAt: new Date(),
-    createdAt: new Date(),
-    type: CollectionType.ERC721,
-  });
-}
- 
-let contractEntity: CollectionEntity | undefined;
- 
-export async function getContractEntity({
-  store,
-}: {
-  store: Store;
-}): Promise<CollectionEntity> {
-  if (contractEntity == null) {
-    contractEntity = await store.get(CollectionEntity, contract.address);
-  }
-  return assertNotNull(contractEntity);
+export function getAddress(hash: string, signature: Signature): string {
+  const pk = ethers.utils.recoverPublicKey(
+    ethers.utils.arrayify(ethers.utils.hashMessage(ethers.utils.arrayify(hash))),
+    signature
+  )
+  // return ethers.utils.getAddress(pk)
+  return ethers.utils.computeAddress(pk)
 }

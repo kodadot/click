@@ -1,4 +1,4 @@
-import { BlockHandlerContext, Store } from '@subsquid/substrate-processor'
+import { BlockHandlerContext } from '@subsquid/substrate-processor'
 import md5 from 'md5'
 import { isERC721 } from '../contract'
 import {
@@ -26,7 +26,8 @@ import {
   eventFrom,
   eventId,
   Interaction, Optional,
-  TokenMetadata
+  TokenMetadata,
+  Store
 } from './utils/types'
 
 async function handleMetadata(
@@ -58,7 +59,7 @@ async function handleMetadata(
 }
 
 export async function handleCollectionCreate(context: Context): Promise<void> {
-  logger.pending(`[COLECTTION++]: ${context.substrate.block.height}`)
+  logger.pending(`[COLECTTION++]: ${context.block.height}`)
   const event = unwrap(context, getCreateCollectionEvent)
   // logger.debug(`collection: ${JSON.stringify(event, serializer, 2)}`)
   const final = await getOrCreate<CE>(context.store, CE, event.id, {})
@@ -88,7 +89,7 @@ export async function handleCollectionCreate(context: Context): Promise<void> {
 }
 
 export async function handleTokenCreate(context: Context): Promise<void> {
-  logger.pending(`[NFT++]: ${context.substrate.block.height}`)
+  logger.pending(`[NFT++]: ${context.block.height}`)
   const event = unwrap(context, getCreateTokenEvent)
   // metaLog('Non-fungible', event)
   const id = createTokenId(event.collectionId, event.sn)
@@ -128,7 +129,7 @@ export async function handleTokenCreate(context: Context): Promise<void> {
 
 export async function handleSingleTokenCreate(context: Context, fromTransfer: boolean = false): Promise<void> {
   if (!fromTransfer) {
-    logger.pending(`[Single NFT++]: ${context.substrate.block.height}`)
+    logger.pending(`[Single NFT++]: ${context.block.height}`)
   }
   const event = unwrap(context, getSingleCreateTokenEvent)
   // metaLog('Fungible', event)
@@ -175,7 +176,7 @@ export async function handleSingleTokenCreate(context: Context, fromTransfer: bo
 
 export async function handleMultiTokenCreate(context: Context, fromTransfer: boolean = false): Promise<void> {
   if (!fromTransfer) {
-    logger.pending(`[Single NFT++]: ${context.substrate.block.height}`)
+    logger.pending(`[Single NFT++]: ${context.block.height}`)
   }
   const event = unwrap(context, getMultiCreateTokenEvent)
   // metaLog('Fungible', event)
@@ -224,7 +225,7 @@ export async function handleMultiTokenCreate(context: Context, fromTransfer: boo
 }
 
 export async function handleSingleTokenTransfer(context: Context): Promise<void> {
-  logger.pending(`[SEND]: ${context.substrate.block.height}`)
+  logger.pending(`[SEND]: ${context.block.height}`)
   const event = unwrap(context, getSingleTransferTokenEvent)
   if (event.count === BIGINT_ZERO) {
     logger.warn(`[SEND] ${event.caller} sent 0 tokens`)
@@ -241,7 +242,7 @@ export async function handleSingleTokenTransfer(context: Context): Promise<void>
 }
 
 export async function handleMultiTokenTransfer(context: Context): Promise<void> {
-  logger.pending(`[SEND]: ${context.substrate.block.height}`)
+  logger.pending(`[SEND]: ${context.block.height}`)
   const event = unwrap(context, getMultiTransferTokenEvent)
 
   logger.debug(`[SEND]: DO BURN`)
@@ -255,7 +256,7 @@ export async function handleMultiTokenTransfer(context: Context): Promise<void> 
 
 export async function handleSingleTokenBurn(context: Context, fromTransfer: boolean = false): Promise<void> {
   if (!fromTransfer) {
-    logger.pending(`[BURN]: ${context.substrate.block.height}`)
+    logger.pending(`[BURN]: ${context.block.height}`)
   }
   const event = unwrap(context, getSingleBurnTokenEvent)
   // logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
@@ -282,7 +283,7 @@ export async function handleSingleTokenBurn(context: Context, fromTransfer: bool
 
 export async function handleMultiTokenBurn(context: Context, fromTransfer: boolean = false): Promise<void> {
   if (!fromTransfer) {
-    logger.pending(`[BURN]: ${context.substrate.block.height}`)
+    logger.pending(`[BURN]: ${context.block.height}`)
   }
   const event = unwrap(context, getMultiBurnTokenEvent)
   // logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
@@ -311,7 +312,7 @@ export async function handleMultiTokenBurn(context: Context, fromTransfer: boole
 }
 
 export async function handleTokenTransfer(context: Context): Promise<void> {
-  logger.pending(`[SEND]: ${context.substrate.block.height}`)
+  logger.pending(`[SEND]: ${context.block.height}`)
   const event = unwrap(context, getTransferTokenEvent)
   // logger.debug(`send: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
@@ -328,7 +329,7 @@ export async function handleTokenTransfer(context: Context): Promise<void> {
 }
 
 export async function handleTokenBurn(context: Context): Promise<void> {
-  logger.pending(`[BURN]: ${context.substrate.block.height}`)
+  logger.pending(`[BURN]: ${context.block.height}`)
   const event = unwrap(context, getBurnTokenEvent)
   // logger.debug(`burn: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
@@ -369,7 +370,7 @@ async function createEvent(
 }
 
 
-export async function forceCreateContract(ctx: BlockHandlerContext) {
+export async function forceCreateContract(ctx: BlockHandlerContext<Store>) {
   const meta = await Promise.all(Object.values(ContractsMap).map(({ metadata }) => metadata).map(m => handleMetadata(m, ctx.store)))
   const contracts = Object.entries(ContractsMap).map(([id, contract], index) => {
     logger.pending(`Building`, id, contract.name)
@@ -440,7 +441,7 @@ async function technoBunker(ctx: Context, transfer: RealTransferEvent, type = Co
 
 
 export async function handleUriChnage(context: Context): Promise<void> {
-  logger.pending(`[NEW URI]: ${context.substrate.block.height}`)
+  logger.pending(`[NEW URI]: ${context.block.height}`)
   const event = unwrap(context, getTokenUriChangeEvent)
   logger.debug('NEW URI', event.metadata)
   if (!event.metadata) {
@@ -461,48 +462,3 @@ export async function handleUriChnage(context: Context): Promise<void> {
   await context.store.save(tokens);
 }
 
-
-// export async function contractLogsHandler(
-//   ctx: EvmLogHandlerContext
-// ): Promise<void> {
-//   const transfer =
-//     erc721.events["Transfer(address,address,uint256)"].decode(ctx);
-
-//   let from = await ctx.store.get(Owner, transfer.from);
-//   if (from == null) {
-//     from = new Owner({ id: transfer.from, balance: 0n });
-//     await ctx.store.save(from);
-//   }
-
-//   let to = await ctx.store.get(Owner, transfer.to);
-//   if (to == null) {
-//     to = new Owner({ id: transfer.to, balance: 0n });
-//     await ctx.store.save(to);
-//   }
-
-//   let token = await ctx.store.get(Token, transfer.tokenId.toString());
-//   if (token == null) {
-//     token = new Token({
-//       id: transfer.tokenId.toString(),
-//       uri: await contract.tokenURI(transfer.tokenId),
-//       contract: await getContractEntity(ctx),
-//       owner: to,
-//     });
-//     await ctx.store.save(token);
-//   } else {
-//     token.owner = to;
-//     await ctx.store.save(token);
-//   }
-
-//   await ctx.store.save(
-//     new Transfer({
-//       id: ctx.txHash,
-//       token,
-//       from,
-//       to,
-//       timestamp: BigInt(ctx.substrate.block.timestamp),
-//       block: ctx.substrate.block.height,
-//       transactionHash: ctx.txHash,
-//     })
-//   );
-// }

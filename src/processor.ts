@@ -1,26 +1,24 @@
 import { lookupArchive } from "@subsquid/archive-registry"
 import {
-  SubstrateEvmProcessor
-} from "@subsquid/substrate-evm-processor"
+  SubstrateProcessor
+} from "@subsquid/substrate-processor"
+import { FullTypeormDatabase as Database } from '@subsquid/typeorm-store'
 import { CHAIN_NODE } from "./contract"
 import * as mappings from './mappings'
 import { multiTransferFilter, singleTransferFilter, transferFilter } from './mappings/utils/evm'
 import { Contracts } from './processable'
 
-const processor = new SubstrateEvmProcessor("moonriver-substrate");
+const database = new Database();
+const processor = new SubstrateProcessor(database)
 
 processor.setBatchSize(500);
 
 processor.setDataSource({
   chain: CHAIN_NODE,
-  archive: lookupArchive("moonriver")[0].url,
+  archive: lookupArchive("moonriver", { release: "FireSquid" }),
 });
 
 processor.setTypesBundle("moonbeam");
-
-// processor.addPreHook({ range: { from: 0, to: 0 } }, async (ctx) => {
-//   await ctx.store.save(createContractEntity());
-// });
 
 processor.addPreHook({ range: { from: 0, to: 0 } }, mappings.forceCreateContract);
 
@@ -43,17 +41,17 @@ processor.addEvmLogHandler(Contracts.Embassy, multiTransferFilter, mappings.mutl
 
 // processor.addEvmLogHandler(
 //   Contracts.Moonx,
-//   multiTransferFilter,
+//   {...multiTransferFilter, range: { from: 1303535, to: 1303535 }},
 //   contractLogsHandler
 // );
 
 // export async function contractLogsHandler(
-//   ctx: EvmLogHandlerContext
+//   ctx: Context
 // ): Promise<void> {
-//   const data = unwrap(ctx, getMultiCreateTokenEvent)
-
+//   // const data = { block: ctx.block, event: ctx.event, hash: ctx.event.evmTxHash }
+//   // const transfer = decode1155MultiTransfer(ctx)
+//   const data = unwrap(ctx, getMultiTransferTokenEvent)
 //   logger.debug(`Transfer: ${JSON.stringify(data, serializer, 2)}`)
-//   logger.debug(`contractAddress: ${ctx.contractAddress}`)
 // }
 
 processor.run();

@@ -1,10 +1,10 @@
 import { EMPTY_ADDRESS } from './constants'
 import * as erc721 from '../../abi/erc721'
 import * as erc1155 from '../../abi/erc1155'
-import { Context, Interaction } from './types'
-import { EvmLogHandlerOptions } from '@subsquid/substrate-evm-processor'
+import { Context, EvmLogHandlerOptions, Interaction } from './types'
 
-export type RealTransferEvent = erc721.TransferAddressAddressUint256Event | erc1155.TransferSingle0Event | erc1155.TransferBatch0Event
+
+export type RealTransferEvent = erc721.Transfer0Event | erc1155.TransferSingle0Event | erc1155.TransferBatch0Event
 
 
 export const isMint = (addrOne: string, addrTwo: string) => {
@@ -31,20 +31,20 @@ export const whatIsThisTransfer = (transfer: RealTransferEvent): Interaction => 
   return Interaction.SEND
 }
 
-export function decode721Transfer(event: Context): erc721.TransferAddressAddressUint256Event {
-  return erc721.events["Transfer(address,address,uint256)"].decode(event)
+export function decode721Transfer({ event }: Context): erc721.Transfer0Event {
+  return erc721.events["Transfer(address,address,uint256)"].decode(event.args)
 }
 
-export function decode1155SingleTransfer(event: Context): erc1155.TransferSingle0Event {
-  return erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].decode(event)
+export function decode1155SingleTransfer({ event }: Context): erc1155.TransferSingle0Event {
+  return erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].decode(event.args)
 }
 
-export function decode1155MultiTransfer(event: Context): erc1155.TransferBatch0Event {
-  return erc1155.events["TransferBatch(address,address,address,uint256[],uint256[])"].decode(event)
+export function decode1155MultiTransfer({ event }: Context): erc1155.TransferBatch0Event {
+  return erc1155.events["TransferBatch(address,address,address,uint256[],uint256[])"].decode(event.args)
 }
 
-export function decode1155UriChange(event: Context): erc1155.URI0Event {
-  return erc1155.events["URI(string,uint256)"].decode(event)
+export function decode1155UriChange({ event }: Context): erc1155.URI0Event {
+  return erc1155.events["URI(string,uint256)"].decode(event.args)
 }
 
 export const transferFilter: EvmLogHandlerOptions = {

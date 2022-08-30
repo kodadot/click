@@ -4,7 +4,7 @@ process: build
 	node -r dotenv/config lib/processor.js
 
 serve:
-	npx squid-graphql-server
+	@npx squid-graphql-server
 
 up:
   docker compose up
@@ -23,7 +23,7 @@ build:
 	npm run build
 
 codegen:
-	npx sqd codegen
+	npx squid-typeorm-codegen
 
 typegen: ksmVersion
 	npx squid-substrate-typegen typegen.json
@@ -32,24 +32,22 @@ ksmVersion: explore
 
 explore:
 	npx squid-substrate-metadata-explorer \
-		--chain wss://basilisk-kodadot.hydration.cloud \
 		--archive $ARCHIVE_URL \
-		--out kusamaVersions.json
+		--out kusamaVersions.jsonl
 
 bug: down up
 
-reset:
-	npx sqd db drop
-	npx sqd db create
-	npx sqd db:migrate
+reset: migrate
+
+quickstart: migrate process
 
 new-schema: codegen build update-db
 
 migrate:
-	npx sqd db:migrate
+	npx squid-typeorm-migration apply
 
 update-db:
-	npx sqd db:create-migration Data
+	npx squid-typeorm-migration create-migration Data
 
 test:
   npm run test:unit
@@ -77,3 +75,9 @@ tail TAG:
 
 dump:
 	docker exec -i click-db-1 /bin/bash -c "pg_dump --username postgres squid" > dump.sql
+
+evm-typegen FILE OUT:
+  npx squid-evm-typegen --abi=src/abi/{{FILE}}.json --output=src/abi/{{OUT}}.ts
+
+erc TAG:
+	npx squid-evm-typegen --abi=src/abi/ERC{{TAG}}.json --output=src/abi/erc{{TAG}}.ts

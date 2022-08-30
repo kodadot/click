@@ -1,3 +1,4 @@
+import { exit } from 'process'
 import { tokenUriOf } from '../../contract'
 import { BIGINT_ONE } from './constants'
 import { decode1155MultiTransfer, decode1155SingleTransfer, decode1155UriChange, decode721Transfer } from './evm'
@@ -42,9 +43,9 @@ export function getSingleCreateTokenEvent(ctx: Context): CreateTokenEvent {
 export function getMultiCreateTokenEvent(
   ctx: Context
 ): CreateMultiTokenEvent {
-  const { to, ids, values } = decode1155MultiTransfer(ctx)
+  const { to, ids, ...rest } = decode1155MultiTransfer(ctx)
+  const values = rest[4]
   const collectionId = contractOf(ctx)
-
   const matches = mapAndMatch(ids, values)
   const snList = Object.keys(matches)
 
@@ -85,7 +86,8 @@ export function getSingleTransferTokenEvent(ctx: Context): TransferSingleTokenEv
 }
 
 export function getMultiTransferTokenEvent(ctx: Context): TransferMultiTokenEvent {
-  const { from, to, ids, values } = decode1155MultiTransfer(ctx)
+  const { from, to, ids, ...rest } = decode1155MultiTransfer(ctx)
+  const values = rest[4]
   const collectionId = contractOf(ctx)
   const matches = mapAndMatch(ids, values)
   return { collectionId, caller: from, snList: Object.keys(matches), to, countList: Object.values(matches) }
@@ -98,7 +100,8 @@ export function getSingleBurnTokenEvent(ctx: Context): BurnSingleTokenEvent {
 }
 
 export function getMultiBurnTokenEvent(ctx: Context): BurnMultiTokenEvent {
-  const { from, ids, values } = decode1155MultiTransfer(ctx)
+  const { from, ids, ...rest } = decode1155MultiTransfer(ctx)
+  const values = rest[4]
   const collectionId = contractOf(ctx)
   const matches = mapAndMatch(ids, values)
   return { collectionId, caller: from, snList: Object.keys(matches), countList: Object.values(matches) }
