@@ -75,3 +75,9 @@ tail TAG:
 
 dump:
 	docker exec -i click-db-1 /bin/bash -c "pg_dump --username postgres squid" > dump.sql
+
+evm-typegen FILE OUT:
+  npx squid-evm-typegen --abi=src/abi/{{FILE}}.json --output=src/abi/{{OUT}}.ts
+
+erc TAG:
+	npx squid-evm-typegen --abi=src/abi/ERC{{TAG}}.json --output=src/abi/erc{{TAG}}.ts
