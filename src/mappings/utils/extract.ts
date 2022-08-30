@@ -5,7 +5,8 @@ import { BIGINT_ZERO } from './constants'
 import { addressOf } from './helper'
 
 function toBaseEvent(context: Context): BaseCall {
-  const caller = addressOf(context.event.extrinsic.signature?.address)
+  // const caller = addressOf(context.event.extrinsic.signature?.address) 
+  const caller = ''
   const blockNumber = context.block.height.toString();
   const timestamp = new Date(context.block.timestamp);
 
