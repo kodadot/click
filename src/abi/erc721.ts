@@ -158,6 +158,10 @@ export class Contract  {
     return this.call("name", [])
   }
 
+  async owner(): Promise<string> {
+    return this.call("owner", [])
+  }
+
   async ownerOf(tokenId: ethers.BigNumber): Promise<string> {
     return this.call("ownerOf", [tokenId])
   }
@@ -394,6 +398,19 @@ function getJsonAbi(): any {
           "internalType": "string",
           "name": "",
           "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
