@@ -1,6 +1,6 @@
 //
 const { contractify } = require('../lib/contract')
-const { NewContracts } = require('../lib/processable')
+const { Contracts: NewContracts } = require('../lib/processable')
 
 const generate = async () => {
   try {
@@ -18,6 +18,12 @@ const printer = async (ct, addr ) => {
   const value = await fetchContractMeta(addr)
   const [name, symbol, totalSupply, owner, uri] = value
   console.log(`[Contracts.${ct}]: toMap('${name}', '${symbol}', ${totalSupply}, '${owner}', '${uri || ''}'),`)    
+}
+
+const graphMaker = async  (ct, addr) => {
+  const contract = contractify(addr)
+  const uri = await contract.tokenURI('1').then((uri) => uri).catch((e) => '')
+  console.log(`[Contracts.${ct}]: (id: string) => '${uri}',`)    
 }
 
 const fetchContractMeta = async (addr) => {
