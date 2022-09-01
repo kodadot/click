@@ -3,7 +3,7 @@ import { ensure } from './types'
 import logger from './logger'
 import { SanitizerFunc, SomethingWithMeta } from './types'
 
-export const BASE_URL = 'https://moonsama.mypinata.cloud/'
+export const BASE_URL = 'https://nftstorage.link/'
 
 const api = Axios.create({
   baseURL: BASE_URL,
@@ -29,21 +29,21 @@ export const sanitizeIpfsUrl = (ipfsUrl: string): string => {
 }
 
 export const fetchMetadata = async <T>(
-  rmrk: SomethingWithMeta,
+  { metadata }: SomethingWithMeta,
   sanitizer: SanitizerFunc = sanitizeIpfsUrl
 ): Promise<T> => {
   try {
-    if (!rmrk.metadata) {
+    if (!metadata) {
       return ensure<T>({})
     }
 
-    const { status, data } = await api.get<T>(sanitizer(rmrk.metadata))
-    logger.watch('[IPFS]', status, rmrk.metadata)
+    const { status, data } = await api.get<T>(sanitizer(metadata))
+    logger.watch('[IPFS]', status, metadata)
     if (status < 400) {
       return data
     }
   } catch (e) {
-    logger.warn('[IPFS] ERROR', (e as Error).message)
+    logger.warn('[IPFS] ERROR', metadata, (e as Error).message)
     return ensure<T>({})
   }
 
