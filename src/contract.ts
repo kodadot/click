@@ -44,7 +44,7 @@ export const baseUriOf = (contract: string): Promise<string> => {
   return contractify(contract).baseURI().catch(() => "");
 }
 
-function contractify(address: string, type = CollectionType.ERC721): Contract {
+export function contractify(address: string, type = CollectionType.ERC721): Contract {
   return eitherOr(type, contract.attach(address), multiContract.attach(address));
 }
 
