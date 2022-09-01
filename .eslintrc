@@ -39,6 +39,7 @@
     "src/model/generated",
     "src/types",
     "db",
-    "tests/"
+    "tests/",
+    "suite/"
   ]
 }
