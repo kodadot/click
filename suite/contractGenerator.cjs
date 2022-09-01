@@ -6,7 +6,7 @@ const generate = async () => {
   try {
     const list = Object.entries(NewContracts)
     for (const [ct, addr] of list) {
-      await printer(ct, addr)
+      await addLog(ct, addr)
     }
   
   } catch (e) {
@@ -24,6 +24,10 @@ const graphMaker = async  (ct, addr) => {
   const contract = contractify(addr)
   const uri = await contract.tokenURI('1').then((uri) => uri).catch((e) => '')
   console.log(`[Contracts.${ct}]: (id: string) => '${uri}',`)    
+}
+
+const addLog = (ct, addr) => {
+  console.log(`processor.addEvmLogHandler(Contracts.${ct}, transferFilter, mappings.mainFrame);`)    
 }
 
 const fetchContractMeta = async (addr) => {
