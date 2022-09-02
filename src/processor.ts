@@ -22,22 +22,20 @@ processor.setTypesBundle("moonbeam");
 
 processor.addPreHook({ range: { from: 0, to: 0 } }, mappings.forceCreateContract);
 
-processor.addEvmLogHandler(Contracts.Moonsama, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.Pondsama, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.Plot, transferFilter, mappings.mainFrame);
-// processor.addEvmLogHandler(Contracts.Blvck, transferFilter, mappings.mainFrame); // TODO: handle separately
-
-processor.addEvmLogHandler(Contracts.Moonx, singleTransferFilter, mappings.singleMainFrame);
-processor.addEvmLogHandler(Contracts.Factory, singleTransferFilter, mappings.singleMainFrame);
-processor.addEvmLogHandler(Contracts.Art, singleTransferFilter, mappings.singleMainFrame);
-processor.addEvmLogHandler(Contracts.Box, singleTransferFilter, mappings.singleMainFrame);
-processor.addEvmLogHandler(Contracts.Embassy, singleTransferFilter, mappings.singleMainFrame);
-
-processor.addEvmLogHandler(Contracts.Moonx, multiTransferFilter, mappings.mutliMainFrame);
-processor.addEvmLogHandler(Contracts.Factory, multiTransferFilter, mappings.mutliMainFrame);
-processor.addEvmLogHandler(Contracts.Art, multiTransferFilter, mappings.mutliMainFrame);
-processor.addEvmLogHandler(Contracts.Box, multiTransferFilter, mappings.mutliMainFrame);
-processor.addEvmLogHandler(Contracts.Embassy, multiTransferFilter, mappings.mutliMainFrame);
+processor.addEvmLogHandler(Contracts.DPS, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.Beanies, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.BUDS, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.NCR1, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.NCR2, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.MoonRiverQuest, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.BadDads, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.BAYMAP, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.BYPC, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.BlvckMarketCyan, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.BlvckSnakesForrest, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.CryptoButchers, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.MBAYC, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.MoonShroomiz, transferFilter, mappings.mainFrame);
 
 // processor.addEvmLogHandler(
 //   Contracts.Moonx,
