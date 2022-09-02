@@ -3,6 +3,11 @@ import { ensure } from './types'
 import logger from './logger'
 import { SanitizerFunc, SomethingWithMeta } from './types'
 
+// import { access, readFile } from 'node:fs/promises'
+// import { join } from 'node:path'
+// import { ASSET_DIR } from './constants'
+// import { constants } from 'node:fs'
+
 export const BASE_URL = 'https://nftstorage.link/'
 
 const api = Axios.create({
@@ -37,7 +42,14 @@ export const fetchMetadata = async <T>(
       return ensure<T>({})
     }
 
-    const { status, data } = await api.get<T>(sanitizer(metadata))
+    const url = sanitizer(metadata)
+
+    // const cached = await fetchFromCache<T>(url)
+    // if (cached) {
+    //   return cached
+    // }
+
+    const { status, data } = await api.get<T>(url)
     logger.watch('[IPFS]', status, metadata)
     if (status < 400) {
       return data
@@ -49,6 +61,26 @@ export const fetchMetadata = async <T>(
 
   return ensure<T>({})
 }
+
+// const shave = (url: string) => url.replace(BASE_URL + 'ipfs/', '')
+// const makeSureItEndsWithJson = (url: string) => {
+//   if (!url.endsWith('.json')) {
+//     return url + '.json'
+//   }
+//   return url
+// }
+
+// const fetchFromCache = async <T>(metadata: string): Promise<Optional<T>> => {
+//   try {
+//     const path = join(ASSET_DIR, makeSureItEndsWithJson(shave(metadata)))
+//     logger.info('[CACHE]', path)
+//     await access(path, constants.R_OK)
+//     logger.star('[CACHE]', metadata)
+//     return readFile(path, 'utf-8').then(JSON.parse)
+//   } catch (e) {
+//     return null
+//   }
+// }
 
 export const fetchMimeType = async (ipfsLink?: string, sanitizer: SanitizerFunc = sanitizeIpfsUrl): Promise<string | undefined> => {
   if (!ipfsLink) {
