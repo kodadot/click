@@ -5,11 +5,11 @@ import { CollectionType } from "./model"
 import { Contracts, ContractsMap } from "./processable"
 import { contractHasGraph, tokenUriOf as tokenMetaOf } from './mappings/utils/graph'
  
-export const CHAIN_NODE = "wss://public-rpc.pinknode.io/moonriver"
-export const HTTP_NODE = "https://moonriver.api.onfinality.io/public"
+export const CHAIN_NODE = "wss://public-rpc.pinknode.io/moonbeam"
+export const HTTP_NODE = "https://moonbeam.api.onfinality.io/public"
 
 export const provider = new ethers.providers.StaticJsonRpcProvider(HTTP_NODE, {
-  chainId: 1285,
+  chainId: 1284,
   name: 'moonriver'
 })
 // export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
