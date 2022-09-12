@@ -15,7 +15,7 @@ processor.setBatchSize(50);
 
 processor.setDataSource({
   chain: CHAIN_NODE,
-  archive: lookupArchive("moonriver", { release: "FireSquid" }),
+  archive: lookupArchive("moonbeam", { release: "FireSquid" }),
 });
 
 processor.setTypesBundle("moonbeam");
@@ -34,6 +34,10 @@ processor.addEvmLogHandler(Contracts.ClipperSurvivorPatch, transferFilter, mappi
 processor.addEvmLogHandler(Contracts.GlmrApesBoost, transferFilter, mappings.mainFrame);
 processor.addEvmLogHandler(Contracts.HamstersGang, transferFilter, mappings.mainFrame);
 processor.addEvmLogHandler(Contracts.Moonfit, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.CanaryNetworkAgency, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.MoonFitBeastandBeauty, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.BoredPuppetYachtClub, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.TheUltimateHarvestMoonCampaign, transferFilter, mappings.mainFrame);
 
 // processor.addEvmLogHandler(
 //   Contracts.Moonx,

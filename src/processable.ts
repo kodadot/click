@@ -16,10 +16,17 @@ export enum Contracts {
   ClipperSurvivorPatch = '0x292cfcb8e1455ac95b45b35bcccd7e09a840fefc',
   GlmrApesBoost = '0xb9f2d4bbfdccad1e2239a4f7b8c917c984e9b863',
   HamstersGang = '0xd105e0da7fdc86192469654fb565c2f584920da0',
-  Moonfit = '0x6758053c0b27e478ede1e4882adff708fc4fa72d'
+  Moonfit = '0x6758053c0b27e478ede1e4882adff708fc4fa72d',
+  CanaryNetworkAgency = '0x139e9ba28d64da245ddb4cf9943aa34f6d5abfc5',
+  MoonFitBeastandBeauty = '0x02a6dec99b2ca768d638fcd87a96f6069f91287c',
+  BoredPuppetYachtClub = '0xd364fb95989f5a47ddb9665149dd750782d37c7f',
+  TheUltimateHarvestMoonCampaign = '0x51737fa634e26f5687e45c6ca07604e064076350',
+  // Groomlins = '0xf27a6c72398eb7e25543d19fda370b7083474735',
+  // EXRMintPass = '0x3507fd182dc5bd1b29214950fdcde40bd167114f',
+  // EXRInventory = '0xa0b48010ff75136bbb5c8a12fedfa37160819834',
 }
 
-export const ContractsMap: Record<Contracts, any> = {
+export const ContractsMap: Record<string, any> = {
   [Contracts.ExiledRacersPilots]: toMap('Exiled Racers Pilot', 'EXRP', 1656, '0x4929f7cb5977bc07c4DF658086aaF25c20052FbA', 'QmYned7JtjauvTWWP9vWK9bBRceLKzsEXhoe2YHLDWNhjx/1'),
   [Contracts.ExilredRacersRacecrafts]: toMap('Exiled Racers Racecraft', 'EXRR', 1525, '0x4929f7cb5977bc07c4DF658086aaF25c20052FbA', 'QmSau6DDfzzsfMh5q9v8S4TnfFrbVu27NfKfy8dWKrHU8v/1'),
   [Contracts.GlmrApes]: toMap('GlimmerApes', 'GLMA', 1001, '0xbCe5F532Fdba96F131682E97ce4aFEa8b778480C', 'QmUTChL9YohXWWNNNKoqvh6oCpib4eTiPMr5fbGYRedhUv/1.json'),
@@ -31,7 +38,10 @@ export const ContractsMap: Record<Contracts, any> = {
   [Contracts.ClipperSurvivorPatch]: toMap('Clipper Survivor NFT (April 2022)', 'CLPSURV0422', 310, '0x960376b3F62f41E7e66809a05D1C5afdFD60A0E9', 'bafybeihtfqplc72hbq4xyoymjltduxk3mepqzydquzmfipmm2r5jn6qrwu/1.json'),
   [Contracts.GlmrApesBoost]: toMap('Bunch Of Bananas', 'BOB', 125, '0xd8C81D0706a027B870c20cC386BBffb15A36815e', 'QmcSR6y8Hmt7oNu4mNVhzp8nusN8RrCyWu3PvvNXgYNPR6/1.json'),
   [Contracts.HamstersGang]: toMap('Hamsters Gang', 'GANG', 1686, '0xb726dEb0AaEA51Efb536075324f2f14B1681d425', 'QmTrje5afpz6ZM8BbY3fpMLL3KG6DJbigLHRBfsryXFtor/1.json'),
-  [Contracts.Moonfit]: toMap('MoonFit Mint Pass', 'MFMP', 1806, '0xC280b576e92212b0450558094969f7Cc928892e4', 'https://bafybeiaqkklaps635kujsuzb34wbyds2maihfa5hcanmutawixu6ny56de.ipfs.nftstorage.link/1.json'),
+  [Contracts.Moonfit]: toMap('MoonFit Mint Pass', 'MFMP', 1806, '0xC280b576e92212b0450558094969f7Cc928892e4', 'bafybeiaqkklaps635kujsuzb34wbyds2maihfa5hcanmutawixu6ny56de/1.json'),
+  [Contracts.CanaryNetworkAgency]: toMap('Canary Network Agency', 'CNA', 697, '0xa25b6FefE3e397E179DB42837a5e424120243E6A', 'QmYKUkwXHCrMxX9MVQkaFc7Sbe2bhTJ7qF1aBSx3tqFMCa'),
+  [Contracts.MoonFitBeastandBeauty]: toMap('MoonFit Beast and Beauty', 'MFBB', 500, '0xC280b576e92212b0450558094969f7Cc928892e4', 'bafybeigexr53jlkwvyiinqt23haux3sthoo236yjnjhzvyoqbelvvlhoga/1.json'),
+  [Contracts.BoredPuppetYachtClub]: toMap('Bored Puppet Yacht Club', 'BPYC', 1130, '0x28dBe185a9eCB314cAA02ec315082a6527638D73', 'QmdfZuWPf5AizhEoVN7LEE1QZ57Sx4U3rze4rhCDzakUgo/1.json'),
 }
 
 function toMap(name: string, symbol: string, max: number, issuer: string, meta: string, type: CollectionType = CollectionType.ERC721): Partial<CollectionEntity> {
