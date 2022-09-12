@@ -6,7 +6,9 @@ const generate = async () => {
   try {
     const list = Object.entries(NewContracts)
     for (const [ct, addr] of list) {
-      await addLog(ct, addr)
+      // await printer(ct, addr)
+      // await addLog(ct, addr)
+      await graphMaker(ct, addr)
     }
   
   } catch (e) {

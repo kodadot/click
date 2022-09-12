@@ -38,7 +38,13 @@ const fetchAndSave = (dirpath) => async (uri, index) => {
 }
 
 
-fetchMetaOf('DPS')
+// fetchMetaOf('DPS')
+
+const justFetch = async (uri) => {
+  const metadata = await fetchMetadata({ metadata: uri })
+  console.log(metadata);
+}
+
 
 // x = path.resolve(assetDir)
 // console.log(x)
