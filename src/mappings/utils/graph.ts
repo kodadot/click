@@ -1,4 +1,4 @@
-import { NewContracts as Contracts } from '../../processable'
+import { Contracts } from '../../processable'
 
 type MapFn = (id: string) => string
 const sameVal: MapFn = (id: string) => id
