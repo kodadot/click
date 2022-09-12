@@ -36,7 +36,7 @@ const fetchContractMeta = async (addr) => {
   try {
     const contract = contractify(addr)
     const fields = ['name', 'symbol', 'totalSupply', 'owner']
-    const mapper = (field) => contract[field]()
+    const mapper = (field) => contract[field]().catch((e) => '')
     const values = fields.map(mapper)
     const uri = contract.tokenURI('1').then((uri) => uri.replace('ipfs://', '')).catch((e) => '')
     return Promise.all([...values, uri])
