@@ -22,20 +22,18 @@ processor.setTypesBundle("moonbeam");
 
 processor.addPreHook({ range: { from: 0, to: 0 } }, mappings.forceCreateContract);
 
-processor.addEvmLogHandler(Contracts.DPS, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.Beanies, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.BUDS, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.NCR1, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.NCR2, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.MoonRiverQuest, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.BadDads, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.BAYMAP, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.BYPC, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.BlvckMarketCyan, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.BlvckSnakesForrest, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.CryptoButchers, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.MBAYC, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.MoonShroomiz, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.ExiledRacersPilots, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.ExilredRacersRacecrafts, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.GlmrApes, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.Moonpets, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.GlmrJungle, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.GlmrPunks, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.MoonbeamPunks, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.MoonbeamLegendaryPunks, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.ClipperSurvivorPatch, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.GlmrApesBoost, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.HamstersGang, transferFilter, mappings.mainFrame);
+processor.addEvmLogHandler(Contracts.Moonfit, transferFilter, mappings.mainFrame);
 
 // processor.addEvmLogHandler(
 //   Contracts.Moonx,
