@@ -1,25 +1,22 @@
-import { Contracts } from '../../processable'
+import { NewContracts as Contracts } from '../../processable'
 
 type MapFn = (id: string) => string
 const sameVal: MapFn = (id: string) => id
 const hexify: MapFn = (id: string) => '0x' + Number(id).toString(16)
 
 const mappers: Record<Contracts, MapFn | undefined> = {
-  [Contracts.DPS]: (id: string) => `ipfs://QmPxvsXf97jd1ZdHAFfmbrH8CvBXw5nQPeB1HA47odRbLz/${id}`,
-  [Contracts.Beanies]: (id: string) => `ipfs://ipfs/QmU4GvDw8VX9We7wg5QrxLmukV4ZWUuGCgxjX9ninDCXMP/${id}.json`,
-  [Contracts.BUDS]: (id: string) => `ipfs://ipfs/QmWH8RUZebD5JfsmzYHA8rT6zirXZrHpa5HFA8n7q7SZNz/${id}.json`,
-  [Contracts.NCR1]: undefined,
-  [Contracts.NCR2]: (id: string) => `https://neoncrisis.io/api/hero/${id}`,
-  [Contracts.MoonRiverQuest]: (id: string) => `ipfs://QmV6kfJg6C9BrvyqSLE4aFfWLnwiGh7FCBebPcG8JbovZs`,
-  [Contracts.BadDads]: (id: string) => `ipfs://QmaJaejKSMGeRvEmaUZmjQzsK849X76Z42eBR937n8THqu/${id}.json`,
-  [Contracts.BAYMAP]: undefined,
-  [Contracts.BYPC]: (id: string) => `ipfs://QmVEGva1f6d8HXHuwaMLGfxyVEpvkc4XWnbwbcmyD8M1ug/${id}.json`,
-  [Contracts.BlvckMarketCyan]: (id: string) => `ipfs://QmQHd7Wa4FZv4N36MSNNHLvbqjTgkf5XZrUfc6ap97cQoC/${id}.json`,
-  // [Contracts.BlvckMarket]: undefined,
-  [Contracts.BlvckSnakesForrest]: (id: string) => `ipfs://QmYSThWjHh3swx2qXxGM6MMdv35hvCmaptNZFDXZisUHzi/${id}.json`,
-  [Contracts.CryptoButchers]: (id: string) => `ipfs://QmVBDKihHMMnbMysmazLzZck5ySE2wJjbHChFVC7qzAw5W/${id}.json`,
-  [Contracts.MBAYC]: (id: string) => `ipfs://ipfs/QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/${id}`,
-  [Contracts.MoonShroomiz]: (id: string) => `ipfs://ipfs/QmXvfjHAiaJHTu5692YofHZunvRJdZiPpcepw8pu4B3wuf/${id}.json`,
+  [Contracts.ExiledRacersPilots]: (id: string) => `ipfs://QmYned7JtjauvTWWP9vWK9bBRceLKzsEXhoe2YHLDWNhjx/${id}`,
+  [Contracts.ExilredRacersRacecrafts]: (id: string) => `https://exr.mypinata.cloud/ipfs/QmSau6DDfzzsfMh5q9v8S4TnfFrbVu27NfKfy8dWKrHU8v/${id}`,
+  [Contracts.GlmrApes]: (id: string) => `https://gateway.pinata.cloud/ipfs/QmUTChL9YohXWWNNNKoqvh6oCpib4eTiPMr5fbGYRedhUv/${id}.json`,
+  [Contracts.Moonpets]: (id: string) => `https://moonpets.mypinata.cloud/ipfs/QmV56th23uMSxyWRveeriW8ScjnnbPRwQy2XvpumcqX8Qb/${id}.json`,
+  [Contracts.GlmrJungle]: (id: string) => `https://www.glmrjungle.com/nfts/${id}.json`,
+  [Contracts.GlmrPunks]: (id: string) => `ipfs://QmXoHd7JKjZ8WaCC6yL38wpsVW1SrFyvimBB6TRWMzx1sz/${id}.json`,
+  [Contracts.MoonbeamPunks]: (id: string) => `ipfs://QmPWo92k7yG4KBs9mWxS9LpAg3psobwq5cPVLc218De6HJ/${id}.json`,
+  [Contracts.MoonbeamLegendaryPunks]: (id: string) => `ipfs://QmWQUM5Wv5aVbidjeoqqmRworW15dr57KfZ1ynLUCJiUdv/${id}.json`,
+  [Contracts.ClipperSurvivorPatch]: (id: string) => `ipfs://bafybeihtfqplc72hbq4xyoymjltduxk3mepqzydquzmfipmm2r5jn6qrwu/${id}.json`,
+  [Contracts.GlmrApesBoost]: (id: string) => `https://gateway.pinata.cloud/ipfs/QmcSR6y8Hmt7oNu4mNVhzp8nusN8RrCyWu3PvvNXgYNPR6/${id}.json`,
+  [Contracts.HamstersGang]: (id: string) => `ipfs://QmTrje5afpz6ZM8BbY3fpMLL3KG6DJbigLHRBfsryXFtor/${id}.json`,
+  [Contracts.Moonfit]: (id: string) => `https://bafybeiaqkklaps635kujsuzb34wbyds2maihfa5hcanmutawixu6ny56de.ipfs.nftstorage.link/${id}.json`,
 }
 
 export const contractHasGraph = (contract: Contracts | string): boolean =>  mappers[contract as Contracts] !== undefined
