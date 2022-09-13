@@ -42,6 +42,7 @@ export const ContractsMap: Record<string, any> = {
   [Contracts.CanaryNetworkAgency]: toMap('Canary Network Agency', 'CNA', 697, '0xa25b6FefE3e397E179DB42837a5e424120243E6A', 'QmYKUkwXHCrMxX9MVQkaFc7Sbe2bhTJ7qF1aBSx3tqFMCa'),
   [Contracts.MoonFitBeastandBeauty]: toMap('MoonFit Beast and Beauty', 'MFBB', 500, '0xC280b576e92212b0450558094969f7Cc928892e4', 'bafybeigexr53jlkwvyiinqt23haux3sthoo236yjnjhzvyoqbelvvlhoga/1.json'),
   [Contracts.BoredPuppetYachtClub]: toMap('Bored Puppet Yacht Club', 'BPYC', 1130, '0x28dBe185a9eCB314cAA02ec315082a6527638D73', 'QmdfZuWPf5AizhEoVN7LEE1QZ57Sx4U3rze4rhCDzakUgo/1.json'),
+  [Contracts.TheUltimateHarvestMoonCampaign]: toMap('Ultimate Harvest Moon Campaign', 'NFT (Project Galaxy)', 41532, '0xD2c31F9D511391AE98826d39dB908b2fB351C47C', ''),
 }
 
 function toMap(name: string, symbol: string, max: number, issuer: string, meta: string, type: CollectionType = CollectionType.ERC721): Partial<CollectionEntity> {
