@@ -37,7 +37,7 @@ processor.addEvmLogHandler(Contracts.Moonfit, transferFilter, mappings.mainFrame
 processor.addEvmLogHandler(Contracts.CanaryNetworkAgency, transferFilter, mappings.mainFrame);
 processor.addEvmLogHandler(Contracts.MoonFitBeastandBeauty, transferFilter, mappings.mainFrame);
 processor.addEvmLogHandler(Contracts.BoredPuppetYachtClub, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.TheUltimateHarvestMoonCampaign, transferFilter, mappings.mainFrame);
+// processor.addEvmLogHandler(Contracts.TheUltimateHarvestMoonCampaign, transferFilter, mappings.mainFrame);
 
 // processor.addEvmLogHandler(
 //   Contracts.Moonx,
