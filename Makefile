@@ -7,7 +7,7 @@ serve:
 
 
 migrate:
-	@npx sqd db:migrate
+	@npx squid-typeorm-migration apply
 
 
 migration:
