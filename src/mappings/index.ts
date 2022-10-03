@@ -387,6 +387,7 @@ export async function forceCreateContract(ctx: BlockHandlerContext<Store>) {
 }
 
 export async function mainFrame(ctx: Context): Promise<void> {
+  console.log('mainFrame', ctx.event.evmTxHash)
   const transfer = decode721Transfer(ctx)
   return technoBunker(ctx, transfer)
 }
