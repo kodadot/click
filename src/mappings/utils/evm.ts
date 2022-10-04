@@ -2,7 +2,7 @@ import { EMPTY_ADDRESS } from './constants'
 import * as erc721 from '../../abi/erc721'
 import * as erc1155 from '../../abi/erc1155'
 import { Context, EvmLogHandlerOptions, Interaction } from './types'
-
+import { EvmLog, getEvmLog } from '@subsquid/substrate-frontier-evm'
 
 export type RealTransferEvent = erc721.Transfer0Event | erc1155.TransferSingle0Event | erc1155.TransferBatch0Event
 
@@ -31,20 +31,24 @@ export const whatIsThisTransfer = (transfer: RealTransferEvent): Interaction => 
   return Interaction.SEND
 }
 
-export function decode721Transfer({ event }: Context): erc721.Transfer0Event {
-  return erc721.events["Transfer(address,address,uint256)"].decode(event.args)
+export function decode721Transfer(ctx: Context): erc721.Transfer0Event {
+  const log = getEvmLog(ctx, ctx.event)
+  return erc721.events["Transfer(address,address,uint256)"].decode(log)
 }
 
-export function decode1155SingleTransfer({ event }: Context): erc1155.TransferSingle0Event {
-  return erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].decode(event.args)
+export function decode1155SingleTransfer(ctx: Context): erc1155.TransferSingle0Event {
+  const log = getEvmLog(ctx, ctx.event)
+  return erc1155.events["TransferSingle(address,address,address,uint256,uint256)"].decode(log)
 }
 
-export function decode1155MultiTransfer({ event }: Context): erc1155.TransferBatch0Event {
-  return erc1155.events["TransferBatch(address,address,address,uint256[],uint256[])"].decode(event.args)
+export function decode1155MultiTransfer(ctx: Context): erc1155.TransferBatch0Event {
+  const log = getEvmLog(ctx, ctx.event)
+  return erc1155.events["TransferBatch(address,address,address,uint256[],uint256[])"].decode(log)
 }
 
-export function decode1155UriChange({ event }: Context): erc1155.URI0Event {
-  return erc1155.events["URI(string,uint256)"].decode(event.args)
+export function decode1155UriChange(ctx: Context): erc1155.URI0Event {
+  const log = getEvmLog(ctx, ctx.event)
+  return erc1155.events["URI(string,uint256)"].decode(log)
 }
 
 export const transferFilter: EvmLogHandlerOptions = {

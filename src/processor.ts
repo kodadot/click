@@ -5,7 +5,7 @@ import {
 import { FullTypeormDatabase as Database } from '@subsquid/typeorm-store'
 import { CHAIN_NODE } from "./contract"
 import * as mappings from './mappings'
-import { multiTransferFilter, singleTransferFilter, transferFilter } from './mappings/utils/evm'
+import { transferFilter } from './mappings/utils/evm'
 import { Contracts } from './processable'
 
 const database = new Database();
@@ -39,19 +39,29 @@ processor.addEvmLogHandler(Contracts.MoonFitBeastandBeauty, transferFilter, mapp
 processor.addEvmLogHandler(Contracts.BoredPuppetYachtClub, transferFilter, mappings.mainFrame);
 // processor.addEvmLogHandler(Contracts.TheUltimateHarvestMoonCampaign, transferFilter, mappings.mainFrame);
 
+// const filter = {...transferFilter, range: { from: 2572550, to: 2572559 }}
 // processor.addEvmLogHandler(
-//   Contracts.Moonx,
-//   {...multiTransferFilter, range: { from: 1303535, to: 1303535 }},
+//   Contracts.DPS,
+//   filter,
 //   contractLogsHandler
 // );
 
 // export async function contractLogsHandler(
 //   ctx: Context
 // ): Promise<void> {
-//   // const data = { block: ctx.block, event: ctx.event, hash: ctx.event.evmTxHash }
+//   const data = { block: ctx.block, event: ctx.event, hash: ctx.event.evmTxHash }
 //   // const transfer = decode1155MultiTransfer(ctx)
-//   const data = unwrap(ctx, getMultiTransferTokenEvent)
-//   logger.debug(`Transfer: ${JSON.stringify(data, serializer, 2)}`)
+//   try {
+//     const transfer = decode721Transfer(ctx)
+//     console.log(`Transfer: ${JSON.stringify(transfer, serializer, 2)}`)
+//   } catch (e) {
+//     console.warn(`Error decoding transfer: ${e}`)
+//     const log = getEvmLog(ctx, ctx.event)
+//     // const transfer2 = decode721Transfer(ctx, log)
+//     console.log(`Error: ${JSON.stringify(log, serializer, 2)}`)
+//     exit(1);
+//   } 
+  
 // }
 
 processor.run();
