@@ -1,6 +1,6 @@
 {
   "name": "@kodadot1/click",
-  "version": "0.0.2-rc0",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "build": "rm -rf lib && tsc",

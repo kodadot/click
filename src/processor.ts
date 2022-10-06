@@ -34,7 +34,6 @@ processor.addEvmLogHandler(Contracts.BYPC, transferFilter, mappings.mainFrame);
 processor.addEvmLogHandler(Contracts.BlvckMarketCyan, transferFilter, mappings.mainFrame);
 processor.addEvmLogHandler(Contracts.BlvckSnakesForrest, transferFilter, mappings.mainFrame);
 processor.addEvmLogHandler(Contracts.CryptoButchers, transferFilter, mappings.mainFrame);
-processor.addEvmLogHandler(Contracts.MBAYC, transferFilter, mappings.mainFrame);
 processor.addEvmLogHandler(Contracts.MoonShroomiz, transferFilter, mappings.mainFrame);
 
 // const filter = {...transferFilter, range: { from: 2572550, to: 2572559 }}
