@@ -1,8 +1,46 @@
+import Axios from 'axios'
 import { Contracts } from '../../processable'
+import logger from './logger'
+
+export const BASE_URL = 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/'
+
+const api = Axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: false,
+})
+
+const query = `
+query MyQuery($id: ID!) {
+  token(id: $id) {
+    uri
+  }
+}
+`
+
+const unwrap = ({ data }: { data: { token: null | { uri: string } } }) => data.token ? data.token.uri : ''
+const logFail = (err: any) => {
+  logger.warn('Failed to get token URI', err)
+  return ''
+}
 
 type MapFn = (id: string) => string
 const sameVal: MapFn = (id: string) => id
 const hexify: MapFn = (id: string) => '0x' + Number(id).toString(16)
+
+const baseUrl: Record<string, string> = {
+  [Contracts.Moonsama]: 'nft',
+  [Contracts.Pondsama]: '',
+  [Contracts.Moonx]: 'nft-1155-mx',
+  [Contracts.Factory]: 'nft-1155-factory',
+  [Contracts.Art]: 'nft-1155-multiverseart',
+  [Contracts.Plot]: 'nft-721-mmplots1',
+  [Contracts.Box]: 'nft-1155-samabox',
+  [Contracts.Embassy]: 'nft-1155-embassy',
+}
+
 
 const mappers: Record<Contracts, MapFn | undefined> = {
   [Contracts.DPS]: (id: string) => `ipfs://QmPxvsXf97jd1ZdHAFfmbrH8CvBXw5nQPeB1HA47odRbLz/${id}`,
@@ -19,6 +57,14 @@ const mappers: Record<Contracts, MapFn | undefined> = {
   [Contracts.BlvckSnakesForrest]: (id: string) => `ipfs://QmYSThWjHh3swx2qXxGM6MMdv35hvCmaptNZFDXZisUHzi/${id}.json`,
   [Contracts.CryptoButchers]: (id: string) => `ipfs://QmVBDKihHMMnbMysmazLzZck5ySE2wJjbHChFVC7qzAw5W/${id}.json`,
   [Contracts.MoonShroomiz]: (id: string) => `ipfs://ipfs/QmXvfjHAiaJHTu5692YofHZunvRJdZiPpcepw8pu4B3wuf/${id}.json`,
+  [Contracts.Moonsama]: hexify,
+  [Contracts.Pondsama]: sameVal,
+  [Contracts.Moonx]: sameVal,
+  [Contracts.Factory]: sameVal,
+  [Contracts.Art]: sameVal,
+  [Contracts.Plot]: hexify,
+  [Contracts.Box]: sameVal,
+  [Contracts.Embassy]: sameVal,
 }
 
 export const contractHasGraph = (contract: Contracts | string): boolean =>  mappers[contract as Contracts] !== undefined
@@ -29,5 +75,26 @@ export const tokenUriOf = (contract: string, tokenId: string): Promise<string> =
     return Promise.resolve('')
   }
 
+  if (baseUrl[contract as Contracts]) {
+    return processAsGraph(contract, tokenId)
+  }
+
   return Promise.resolve(mapper(tokenId))
+}
+
+export const processAsGraph = (contract: string, tokenId: string): Promise<string> => {
+  const endpoint = baseUrl[contract as Contracts]
+  const idMapper = mappers[contract as Contracts]
+  if (!endpoint || !idMapper ) {
+    return Promise.resolve('')
+  }
+
+  const id = idMapper(tokenId)
+  return api.post(endpoint, {
+    query,
+    variables: { id }
+  })
+  .then(({ data }) =>  data)
+  .then(unwrap)
+  .catch(logFail)
 }
