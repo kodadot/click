@@ -19,7 +19,6 @@ export enum Contracts {
   // BlvckMarket = '0xfed9e29b276c333b2f11cb1427142701d0d9f7bf',
   BlvckSnakesForrest  = '0x09a7f6e904bd6293ed382e905895efd0983f325f',
   CryptoButchers = '0x0dad866dc0c13fb8e4a91d1b5e83cf3a61d4cee2',
-  MBAYC  = '0x8cce48f0cecfd2c3e8481e547b052ff117417d81',
   MoonShroomiz = '0x2f26efdb7233a014715ce6e895aa67d846d93f1e',
 }
 
@@ -37,7 +36,6 @@ export const ContractsMap: Record<Contracts, any>  = {
   // [Contracts.BlvckMarket]: toMap('BlvckMarketNFT', 'BMANFT', 1333, '0x56b0b239508f63C5a38558c6987cca0195d62039', 'QmcuV7UqedmTKVzQ9yD2QNm3dhiaN5JXdqRtJTFKqTJEL3'),
   [Contracts.BlvckSnakesForrest]: toMap('BlvckMarketDvrkForest', 'BMADVRKFOREST', 717, '0x56b0b239508f63C5a38558c6987cca0195d62039', 'QmYSThWjHh3swx2qXxGM6MMdv35hvCmaptNZFDXZisUHzi/1.json'),
   [Contracts.CryptoButchers]: toMap('CryptoButchers', 'BUTCHER', 7776, '0xaE9ccb445f793ED458e73505644ef2FADfb17Ac8', 'QmVBDKihHMMnbMysmazLzZck5ySE2wJjbHChFVC7qzAw5W/1.json'),
-  [Contracts.MBAYC]: toMap('MoonriverBoredApeYachtClub', 'MBAYC', 897, '0x19a95fce568Ffa050E41C94bC0539dc2d77786Ab', 'QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/1'),
   [Contracts.MoonShroomiz]: toMap('MoonShroomiz', 'MSHZ', 500, '0xbCe5F532Fdba96F131682E97ce4aFEa8b778480C', 'QmXvfjHAiaJHTu5692YofHZunvRJdZiPpcepw8pu4B3wuf/1.json'),
 }
 

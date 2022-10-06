@@ -18,7 +18,6 @@ const mappers: Record<Contracts, MapFn | undefined> = {
   // [Contracts.BlvckMarket]: undefined,
   [Contracts.BlvckSnakesForrest]: (id: string) => `ipfs://QmYSThWjHh3swx2qXxGM6MMdv35hvCmaptNZFDXZisUHzi/${id}.json`,
   [Contracts.CryptoButchers]: (id: string) => `ipfs://QmVBDKihHMMnbMysmazLzZck5ySE2wJjbHChFVC7qzAw5W/${id}.json`,
-  [Contracts.MBAYC]: (id: string) => `ipfs://ipfs/QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/${id}`,
   [Contracts.MoonShroomiz]: (id: string) => `ipfs://ipfs/QmXvfjHAiaJHTu5692YofHZunvRJdZiPpcepw8pu4B3wuf/${id}.json`,
 }
 
