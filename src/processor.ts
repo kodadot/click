@@ -11,8 +11,6 @@ import { Contracts } from './processable'
 const database = new Database();
 const processor = new SubstrateProcessor(database)
 
-processor.setBatchSize(50);
-
 processor.setDataSource({
   chain: CHAIN_NODE,
   archive: lookupArchive("moonriver", { release: "FireSquid" }),
