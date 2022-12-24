@@ -1,4 +1,30 @@
+import Axios from 'axios'
 import { Contracts } from '../../processable'
+import logger from './logger'
+
+export const BASE_URL = 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/'
+
+const api = Axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: false,
+})
+
+const query = `
+query MyQuery($id: ID!) {
+  token(id: $id) {
+    uri
+  }
+}
+`
+
+const unwrap = ({ data }: { data: { token: null | { uri: string } } }) => data.token ? data.token.uri : ''
+const logFail = (err: any) => {
+  logger.warn('Failed to get token URI', err)
+  return ''
+}
 
 type MapFn = (id: string) => string
 const sameVal: MapFn = (id: string) => id
@@ -30,6 +56,7 @@ export const tokenUriOf = (contract: string, tokenId: string): Promise<string> =
   if (!mapper) {
     return Promise.resolve('')
   }
+
 
   return Promise.resolve(mapper(tokenId))
 }

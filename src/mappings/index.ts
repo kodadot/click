@@ -20,6 +20,7 @@ import { isEmpty } from './utils/helper'
 import logger, { logError, transferDebug } from './utils/logger'
 import { fetchMetadata } from './utils/metadata'
 import { findAll1155Tokens } from './utils/query'
+import { serializer } from './utils/serializer'
 import {
   attributeFrom,
   BaseCall, Context, ensure,
@@ -314,18 +315,25 @@ export async function handleMultiTokenBurn(context: Context, fromTransfer: boole
 export async function handleTokenTransfer(context: Context): Promise<void> {
   logger.pending(`[SEND]: ${context.block.height}`)
   const event = unwrap(context, getTransferTokenEvent)
-  // logger.debug(`send: ${JSON.stringify(event, serializer, 2)}`)
+
   const id = createTokenId(event.collectionId, event.sn)
-  const entity = ensure<NE>(await get(context.store, NE, id))
+  const mayEntity = await get(context.store, NE, id)
+  logger.debug(`ENTITY IS: ${JSON.stringify((mayEntity || {}), serializer, 2)}`)
+  const entity = ensure<NE>(mayEntity)
   plsBe(real, entity)
 
   const currentOwner = entity.currentOwner
   entity.currentOwner = event.to
-  logger.success(
-    `[SEND] ${id} from ${event.caller} to ${event.to}`
-  )
+  logger.success(`[SEND] ${id} from ${event.caller} to ${event.to}`)
   await context.store.save(entity)
-  await createEvent(entity, Interaction.SEND, event, event.to || '', context.store, currentOwner)
+  await createEvent(
+    entity,
+    Interaction.SEND,
+    event,
+    event.to || '',
+    context.store,
+    currentOwner
+  )
 }
 
 export async function handleTokenBurn(context: Context): Promise<void> {
