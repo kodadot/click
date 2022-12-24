@@ -3,6 +3,8 @@ import { BaseCall, CallWith, Context, UnwrapFunc } from './types'
 import { BigNumber } from 'ethers'
 import { BIGINT_ZERO } from './constants'
 import { addressOf } from './helper'
+import logger from './logger'
+import { serializer } from './serializer'
 
 function toBaseEvent(context: Context): BaseCall {
   // const caller = addressOf(context.event.extrinsic.signature?.address) 
@@ -14,7 +16,7 @@ function toBaseEvent(context: Context): BaseCall {
 }
 
 export function contractOf(event: Context): string {
-  return event.event.args.address
+  return event.event.args.address || event.event.args.log.address
 }
 
 

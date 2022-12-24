@@ -315,10 +315,9 @@ export async function handleMultiTokenBurn(context: Context, fromTransfer: boole
 export async function handleTokenTransfer(context: Context): Promise<void> {
   logger.pending(`[SEND]: ${context.block.height}`)
   const event = unwrap(context, getTransferTokenEvent)
-
+  logger.debug(`SEND UNWRAPPED: ${JSON.stringify(event, serializer, 2)}`)
   const id = createTokenId(event.collectionId, event.sn)
   const mayEntity = await get(context.store, NE, id)
-  logger.debug(`ENTITY IS: ${JSON.stringify((mayEntity || {}), serializer, 2)}`)
   const entity = ensure<NE>(mayEntity)
   plsBe(real, entity)
 
