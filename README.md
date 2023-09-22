@@ -1,5 +1,7 @@
 # Click
 
+[TUTORIAL](https://github.com/subsquid-labs/squid-frontier-evm-template/tree/master)
+
 ![](https://media.giphy.com/media/KZEniLNHKh2HRFEhdu/giphy.gif)
 
 Support of Moonsama-based NFTs in the KodaDot
